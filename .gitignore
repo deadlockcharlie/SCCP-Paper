@@ -1,0 +1,119 @@
+# LaTeX auxiliary files
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+# LaTeX intermediate files
+*.dvi
+*.xdv
+*-converted-to.*
+
+# Bibliography auxiliary files
+*.bbl
+*.bcf
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+# Build tool auxiliary files
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+
+# Build tool directories
+latex.out/
+
+# Auxiliary files for hyperref
+*.brf
+
+# Auxiliary files for listings
+*.lol
+
+# Auxiliary files for algorithms
+*.alg
+*.loa
+
+# Auxiliary files for theorems
+*.thm
+
+# Auxiliary files for TikZ & PGF
+*.dpth
+*.md5
+*.auxlock
+
+# Auxiliary files for todonotes
+*.tdo
+
+# Auxiliary files for nomencl
+*.nlo
+*.nls
+*.nlg
+
+# Auxiliary files for glossaries
+*.acn
+*.acr
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.lzo
+*.lzs
+
+# Auxiliary files for minitoc
+*.maf
+*.mlf
+*.mlt
+*.mtc[0-9]*
+*.slf[0-9]*
+*.slt[0-9]*
+*.stc[0-9]*
+
+# Auxiliary files for changes
+*.soc
+
+# Auxiliary files for comment
+*.cut
+
+# Auxiliary files for the latexindent backup
+*.bak[0-9]*
+
+# Temporary files
+*.swp
+*~
+*.backup
+*.sav
+*.tmp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.code-workspace
+.vscode/
+.idea/
+
+# PDF output (uncomment if you don't want to track PDFs)
+# *.pdf
+
+# Specific to this project
+*.axp
+*.hd
