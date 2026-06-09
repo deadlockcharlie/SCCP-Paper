@@ -1,0 +1,92 @@
+\newcommand{\replicated}{\ensuremath{{}^{\blacktriangle}{}}}
+\newcommand{\R}{\replicated}
+\newcommand{\tombstone}{\ensuremath{^\dagger{}}}
+\newcommand{\T}{\tombstone}
+\newcommand{\Vertices}{\ensuremath{V\replicated{}}}
+\newcommand{\Edges}{\ensuremath{E\replicated{}}}
+\newcommand{\vertices}{\ensuremath{{v{}}}}
+\newcommand{\edges}{\ensuremath{{e{}}}}
+\newcommand{\Effect}{\ensuremath{\delta}}
+\newcommand{\Effects}{\ensuremath{\Delta}}
+\newcommand{\Graph}{\ensuremath{G\replicated}}
+\newcommand{\Merge}{\ensuremath{\sqcup}}
+\newcommand{\LessThan}{\ensuremath{\le}}
+\newcommand{\GraphStates}{\ensuremath{\mathbb{G}}}
+\newcommand{\pgcrdt}{\ensuremath{\text{PG-CRDT}}}
+\newcommand{\grace}{\ensuremath{\text{GRACE}}}
+
+\newcommand{\addV}{\ensuremath{\mathit{addV}}}
+\newcommand{\addE}{\ensuremath{\mathit{addE}}}
+\newcommand{\setP}{\ensuremath{\mathit{setP}}}
+\newcommand{\addL}{\ensuremath{\mathit{addL}}}
+\newcommand{\removeE}{\ensuremath{\mathit{removeE}}}
+\newcommand{\removeV}{\ensuremath{\mathit{removeV}}}
+\newcommand{\removeP}{\ensuremath{\mathit{removeP}}}
+\newcommand{\removeL}{\ensuremath{\mathit{removeL}}}
+\newcommand{\getE}{\ensuremath{\mathit{getE}}}
+\newcommand{\getV}{\ensuremath{\mathit{getV}}}
+\newcommand{\getP}{\ensuremath{\mathit{getP}}}
+\newcommand{\getL}{\ensuremath{\mathit{getL}}}
+
+\newcommand{\lbls}{\ensuremath{\mathit{lbls}}}
+\newcommand{\props}{\ensuremath{\mathit{props}}}
+
+\newcommand{\aput}{\ensuremath{\mathit{put}}}
+\newcommand{\get}{\ensuremath{\mathit{get}}}
+\newcommand{\remove}{\ensuremath{\mathit{remove}}}
+
+\newcommand{\property}[1]{\text{\textsf{#1}}}
+
+\newcommand{\commentaire}[2][fromWhom?]{%
+  {%
+    \color{red}{$\triangleright$(#1:) #2$\triangleleft$}%
+}}
+% \renewcommand{\commentaire}[2]{} 
+
+\newcommand{\ps}[1]{\commentaire[{\color{blue}{Pierre}}]{#1}}
+\newcommand{\ap}[1]{\commentaire[{\color{red}{Ayush}}]{#1}}
+\newcommand{\sd}[1]{\commentaire[{\color{purple}{Stefania}}]{#1}}
+
+\newcommand{\WIP}{\textbf{\color{blue}{WIP.}}}
+\newcommand{\FIXME}{\textbf{\color{Orange}{FIXME.}}}
+\newcommand{\DONE}{\textbf{\color{Gray}{DONE.}}}
+\newcommand{\AF}{\ensuremath{\text{Please refer to the Author Feedback.}}}
+\newcommand{\sep}{\ensuremath{,}}
+
+\newcommand{\graphG}{\ensuremath{{\color{Black}{G}}}}
+\newcommand{\graphH}{\ensuremath{{\color{Blue}{H}}}}
+\newcommand{\graphI}{\ensuremath{{\color{Red}{I}}}}
+\newcommand{\graphJ}{\ensuremath{{\color{Purple}{J}}}}
+\newcommand{\graphK}{\ensuremath{{\color{Gray}{K}}}}
+\newcommand{\graphL}{\ensuremath{{\color{Green}{L}}}}
+\newcommand{\graphM}{\ensuremath{{\color{Orange}{M}}}}
+\newcommand{\graphN}{\ensuremath{{\color{Brown}{N}}}}
+
+\newcommand{\millisecond}[1]{\ensuremath{\text{#1}~\text{ms}}}
+\newcommand{\microsecond}[1]{\ensuremath{\text{#1}~\mu\text{s}}}
+\newcommand{\nanosecond}[1]{\ensuremath{\text{#1}~\text{ns}}}
+\newcommand{\second}[1]{\ensuremath{\text{#1}~\text{s}}}
+\newcommand{\minute}[1]{\ensuremath{\text{#1}~\text{min}}}
+
+\newcommand{\speedup}[1]{\ensuremath{\text{#1\textsf{x}}}}
+\newcommand{\ops}[1]{\ensuremath{\text{#1~\text{ops/s}}}}
+\newcommand{\kops}[1]{\ensuremath{\text{#1\text{K~ops/s}}}}
+\newcommand{\mops}[1]{\ensuremath{\text{#1\text{M~ops/s}}}}
+
+\newcommand{\million}[1]{\ensuremath{\text{{#1}M}}}
+
+\newcommand{\byte}[1]{\ensuremath{\text{{#1}~B}}}
+\newcommand{\kbyte}[1]{\ensuremath{\text{{#1}~KB}}}
+\newcommand{\mbyte}[1]{\ensuremath{\text{{#1}~MB}}}
+\newcommand{\gbyte}[1]{\ensuremath{\text{{#1}~GB}}}
+\newcommand{\optional}{\ensuremath{\text{\lstinline{[OPTIONAL]}}}}
+\newcommand{\open}{\ensuremath{\text{\lstinline{[OPEN]}}}}
+
+\newcommand{\domain}{\ensuremath{\mathit{dom}}}
+
+\newcommand{\YES}{\ensuremath{\text{{\color{OliveGreen} $\surd$\xspace}}}}
+\newcommand{\PARTIAL}{\ensuremath{\text{{\color{Orange} $\surd$\xspace}}}}
+\newcommand{\NO}{\ensuremath{\text{{\color{BrickRed} $\times$\xspace}}}}
+\newcommand{\NA}{\ensuremath{\text{{\color{Black} --\xspace}}}}
+
+\newcommand{\fmke}{\ensuremath{\text{FMKe}}}

@@ -1,0 +1,230 @@
+\usepackage{xr-hyper}
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{subcaption}
+\captionsetup[table]{skip=0pt, aboveskip=0pt, belowskip=0pt, justification=centering}
+\captionsetup[figure]{skip=0pt, aboveskip=0pt, belowskip=0pt, justification=centering}
+\usepackage{svg}
+\usepackage{tikz}
+\usetikzlibrary{
+    arrows.meta,
+    intersections,
+    positioning,
+    shapes.multipart,
+    calc, 
+    shapes.misc
+}
+\tikzset{>={Stealth[scale=1]}}
+
+\usepackage[bb=esstix, scr=rsfs, cal=euler]{mathalfa}
+
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
+\usepackage{balance}
+\usepackage{braket}
+\usepackage{diagbox}
+\usepackage{mathrsfs}
+\usepackage{adjustbox}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+\SetAlgoNoEnd
+
+\usepackage{circledtext}
+
+\usepackage[bibliography=common]{apxproof}
+\renewcommand{\appendixsectionformat}[2]{Supplementary Material for Section~#1 (#2)}
+% \newtheoremrep{proposition}[theorem]{Proposition}
+%\newtheoremrep{lemma}[theorem]{Lemma}
+
+
+\usepackage{multirow}
+\usepackage{multicol}
+
+% BEGIN: LISTINGS
+% Define Listings Package
+\usepackage{listings}
+% Define Language
+\lstdefinelanguage{pgkeysLang}
+{
+  % list of keywords
+  morekeywords={
+    FOR,
+    WITHIN,
+    EXCLUSIVE,
+    MANDATORY,
+    SINGLETON,
+    IDENTIFIER,
+    MATCH,
+    WHERE,
+    NOT,
+    OR,
+    AND,
+    EXISTS,
+    RETURN,
+    OPTIONAL,
+    IN,
+    IS,
+    AS,
+    NULL,
+    CREATE,
+    GRAPH, 
+    TYPE,
+    STRICT,
+    OPEN,
+    hasKey,
+    FunctionalProperty,
+    context,
+    test,
+    unique,
+    key,
+    selector,
+    field,
+    allInstances,
+    isUnique,
+    Tuple,
+    class,
+    extent,
+    relationship,
+    inverse,
+    attribute
+  },
+  sensitive=false, % keywords are not case-sensitive
+  morecomment=[l]{//}, % l is for line comment
+  morecomment=[s]{/*}{*/}, % s is for start and end delimiter
+  morestring=[b]" % defines that strings are enclosed in double quotes
+}
+
+% Define Colors
+\usepackage{soul}
+\usepackage{color}
+\colorlet{hlgray}{black!10}
+\newcommand{\highlight}[2][hlgray]{\mathchoice%
+  {\colorbox{#1}{$\rule[-.2em]{0pt}{.9em}\displaystyle#2$}}%
+  {\colorbox{#1}{$\rule[-.2em]{0pt}{.9em}\textstyle#2$}}%
+  {\colorbox{#1}{$\rule[-.2em]{0pt}{.9em}\scriptstyle#2$}}%
+  {\colorbox{#1}{$\rule[-.2em]{0pt}{.9em}\scriptscriptstyle#2$}}}%
+\definecolor{eclipseBlue}{RGB}{42,0.0,255}
+\definecolor{eclipseGreen}{RGB}{63,127,95}
+\definecolor{eclipsePurple}{RGB}{127,0,85}
+ 
+% Set Language
+\lstset{
+  language={pgkeysLang},
+  basicstyle=\normalfont\ttfamily, % Global Code Style
+  extendedchars=true, % Allows 256 instead of 128 ASCII characters
+  tabsize=2, % number of spaces indented when discovering a tab 
+  columns=fixed, % make all characters equal width
+  keepspaces=true, % does not ignore spaces to fit width, convert tabs to spaces
+  showstringspaces=false, % lets spaces in strings appear as real spaces
+  breaklines=true, % wrap lines if they don't fit
+%  numbers=left, % show line numbers at the left
+%  numberstyle=\tiny\ttfamily, % style of the line numbers
+  commentstyle=\color{eclipseGreen}, % style of comments
+  keywordstyle=\color{eclipsePurple}, % style of keywords
+  stringstyle=\color{eclipseBlue}, % style of strings
+  escapeinside={(*}{*)}, % escape symbols
+  aboveskip=2.5pt,
+  belowskip=1.5pt,
+  backgroundcolor=,
+}
+
+% END: LISTINGS
+\newcommand{\pathvar}{\text{{\sc p}}}
+
+\newcommand{\fragmentfont}[1]{\ensuremath{\text{{\rm\sc{}#1}}}}
+\newcommand{\pgkey}{\fragmentfont{PG-Key}}
+\newcommand{\pgkeys}{\fragmentfont{PG-Keys}}
+\newcommand{\mpgkey}{\fragmentfont{mPG-Key}}
+\newcommand{\mpgkeys}{\fragmentfont{mPG-Keys}}
+\newcommand{\pgkeyp}{\fragmentfont{PG-Key$^\pathvar$}}
+\newcommand{\pgkeysp}{\fragmentfont{PG-Keys$^\pathvar$}}
+\newcommand{\ged}{\fragmentfont{GED}}
+\newcommand{\gfd}{\fragmentfont{GFD}}
+\newcommand{\ggd}{\fragmentfont{GGD}}
+
+
+\newcommand{\sembracks}[1]{[\![#1]\!]}
+\renewcommand\set[1]{\csname set \endcsname{\mskip-\medmuskip#1\mskip-\medmuskip}}
+\renewcommand{\bar}[1]{\overline{#1}}
+
+
+\newcommand{\Constraint}{\mathscr{C}}
+\newcommand{\Ell}{\mathscr{L}}
+\newcommand{\Pred}{\mathscr{P}}
+\newcommand{\ndoteq}{\mathrel{\not\doteq}}
+\newcommand{\doteqc}{\mathrel{\doteq_c}}
+\newcommand{\ndoteqc}{\mathrel{\not\doteqc}}
+\newcommand{\doteqi}{\mathrel{\doteq_i}}
+\newcommand{\ndoteqi}{\mathrel{\not\doteqi}}
+\newcommand{\doteqd}{\mathrel{\doteq_d}}
+\newcommand{\ndoteqd}{\mathrel{\not\doteqd}}
+\newcommand{\cq}{\text{\rm\sc CQ}}
+\newcommand{\cqeq}{\ensuremath{\cq[\doteq]}}
+\newcommand{\cqneq}{\ensuremath{\cq[\doteq,\ndoteq]}}
+\newcommand{\cqeqc}{\ensuremath{\cq[\doteq_c]}}
+\newcommand{\cqneqc}{\ensuremath{\cq[\doteq_c,\ndoteq_c]}}
+\newcommand{\rpq}{\text{\rm\sc RPQ}}
+\newcommand{\crpq}{\text{\rm\sc CRPQ}}
+\newcommand{\acrpq}{\text{\rm\sc aCRPQ}}
+\newcommand{\ccq}{\text{\rm\sc CCQ}}
+\newcommand{\accq}{\text{\rm\sc aCCQ}}
+\newcommand{\lstinmath}[1]{\text{\lstinline{#1}}}
+
+
+\newcommand{\ptime}{\textbf{PTIME}}
+\newcommand{\np}{\textbf{NP}}
+\newcommand{\conp}{\textbf{coNP}}
+\newcommand{\pip}[1]{\textbf{$\mathbf{\Pi_2^\text{P}}$}}
+
+
+\DeclareMathOperator{\im}{\mathsf{Im}}
+% \DeclareMathOperator{\dom}{\mathsf{Dom}}
+\DeclareMathOperator{\atoms}{\mathsf{Atoms}}
+\DeclareMathOperator{\vars}{\mathsf{Vars}}
+\DeclareMathOperator{\dup}{\mathsf{dup}}
+\DeclareMathOperator{\cons}{\mathsf{Cons}}
+
+\newcommand{\pginmathkw}[1]{\mathrel{\lstinmath{#1}}}
+\newcommand{\FOR}{\pginmathkw{FOR}}
+\newcommand{\INDENT}{\ \ \ \ }
+\newcommand{\WITHIN}{\pginmathkw{WITHIN}}
+\newcommand{\AND}{\mathbin{\lstinmath{AND}}}
+\newcommand{\EXCLUSIVE}{\pginmathkw{EXCLUSIVE}}
+\newcommand{\MANDATORY}{\pginmathkw{MANDATORY}}
+\newcommand{\SINGLETON}{\pginmathkw{SINGLETON}}
+\newcommand{\IDENTIFIER}{\pginmathkw{IDENTIFIER}}
+\newcommand{\WHERE}{\pginmathkw{WHERE}}
+
+\newenvironment{alignpgk}{%
+    \begingroup%
+    \addtolength{\jot}{-3pt}
+    \setlength\abovedisplayskip{2pt}%
+    \setlength\belowdisplayskip{2pt}%
+    \setlength\abovedisplayshortskip{-5pt}%
+    \setlength\belowdisplayshortskip{-5pt}%
+    \csname align*\endcsname%
+    }{\refstepcounter{equation}\tag{\theequation}\endalign\endgroup}
+\newenvironment{alignpgk*}{\alignpgk}{\endalign\endgroup}
+
+
+\newcommand{\enumstyle}[1]{\textcolor{lipicsGray}{\sffamily\bfseries\upshape\mathversion{bold}#1}}
+
+\newcommand{\subsetfin}{\mathrel{%
+\mathchoice%
+  {\underset{\text{fin}}{\subset}}
+  {\adjustbox{scale=.5, raise=-1.1ex, margin=.8ex 0mm 0mm 0mm, set depth=0pt,rlap}{{\normalfont\bf f\hskip1pt in}}\subset}
+  {\subset_{\text{fin}}}%
+  {\subset_{\text{fin}}}%
+}}
+
+\newcommand{\finpowerset}[1]{\mathbf{FP}(#1)}
+
+
+\newcommand{\nonedc}{\ensuremath{\text{\texttt{none}}}}
+\newcommand{\peer}{\ensuremath{\text{\texttt{peer}}}}
+\newcommand{\dc}{\ensuremath{\text{\texttt{dc}}}}
+\newcommand{\both}{\ensuremath{\text{\texttt{both}}}}

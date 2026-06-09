@@ -1,0 +1,308 @@
+\section{CRDT Liftability}
+\labappendix{crdtliftability}
+% \ap{A lot of complexity for this proof is hidden in the get function. Is there a way to characterise it in more detail?}
+
+\begin{definition}[Sequential Type]
+A sequential type $T = (S,s_0, \Delta)$  is a triple
+    where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
+    
+    We write $s \xrightarrow{op} s'$ when $\Delta(s, op) = s'$
+\end{definition}
+
+% \ps{I think you should start with the definition of liftability before characterizing it. This can be extracted from the proof below.}
+
+\begin{definition}[Induced binary operator]
+Given a sequential type $T$, we define the binary operator \footnote{The binary operator $\oplus$ is well-defined only when the transition system is \emph{confluent}. } $\oplus: S \times S \to S$ induced by the transition function $\Delta$ such that for any states $s , s', s'' \in S$, $s \oplus s' = s''$ by applying the union of the operation multi-sets that lead to states $s$ and $s'$ respectively. Formally, if $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta ^* (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$
+
+\end{definition}
+ \begin{definition}[Liftablity]
+A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R =(\mathbb{S}, \bot, \Delta') $ with a binary operator $\sqcup$, an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
+
+% and initial element $\bot$, and an observation function $\get : T\R \to T$, satisfying:
+
+\begin{itemize}
+\item[(L1)] $\get(\bot) = s_0$
+\item[(L2)] For any $s_1, s_2 \in \mathbb{S}, \get(s_1 \sqcup s_2) = \get(s_1) \oplus \get(s_2)$
+
+% with $b$ fresh \ps{definition? One idea is that neither $a \leq b$, nor the other way around, but I see that you consider something different below.} with respect to $a$:
+
+
+\item[(L3)] $\get$ is surjective: for every $s \in S$ there exists some $s' \in \mathbb{S}$ with $\get(s') = s$.
+\item[(L4)] $\sqcup$ is commutative, associative, and idempotent.
+\end{itemize}
+ \end{definition}
+
+% \ps{One thing also that matters is the assumption about $\oplus$. In general, a data type has a transition function. Maybe you can relate the two, e.g., by saying that $\oplus$ is induced by the transition function: for any two states $s$, $s'$ such that for some operation $op$ $op(s)=s'$ then $s \oplus s' = s'$.}
+
+\begin{theorem}[Liftability Characterization]
+A sequential type $T$ is liftable via  $\R$ if $~T$ is a commutative monoid.
+\end{theorem}
+
+\begin{proof}
+We prove both directions separately.
+\medskip
+\noindent\textbf{($\Rightarrow$) Necessity: Liftability implies commutative monoid}
+\medskip
+\noindent
+
+We verify the three axioms of a commutative monoid in turn.
+
+\medskip
+\noindent\emph{Associativity of $\oplus$.}
+Let $s, t, u \in S$ be arbitrary. By surjectivity (L3), choose $a, b, c \in \mathbb{S}$ with $\get(a) = s$, $\get(b) = t$, $\get(c) = u$.
+
+% and where $a, b, c$ are mutually fresh with respect to one another (this is always achievable by considering distinct replica contributions).
+% \ap{I need to characterize this freshness better. This reads very vague.}
+
+By (L2) and associativity of $\sqcup$ (L4):
+\begin{align}
+\get(a \sqcup (b \sqcup c)) &= \get(a) \oplus \get(b \sqcup c) = s \oplus (t \oplus u) \\
+\get((a \sqcup b) \sqcup c) &= \get(a \sqcup b) \oplus \get(c) = (s \oplus t) \oplus u
+\end{align}
+
+Since $\sqcup$ is associative, $a \sqcup (b \sqcup c) = (a \sqcup b) \sqcup c$, and applying $\get$ to both sides:
+\[
+s \oplus (t \oplus u) = (s \oplus t) \oplus u
+\]
+
+Since $s, t, u$ were arbitrary, $\oplus$ is associative.
+\ps{OK}
+
+\medskip
+\noindent\emph{Identity element.}
+Let $t \in S$ be arbitrary and choose $a \in \mathbb{S}$ with $\get(a) = t$. We need a state representing $s_0$ to merge with. By (L1), $\get(\bot) = s_0$. We need $\bot$ to act as a fresh contribution with respect to $a$, which holds at initialization since $\bot$ carries no updates.
+
+By (L2): 
+\[
+\get(a \sqcup \bot) = \get(a) \oplus \get(\bot) = t \oplus s_0
+\]
+But $\bot$ is the identity of $\sqcup$ by the CRDT definition, so $a \sqcup \bot = a$, hence:
+\[
+\get(a \sqcup \bot) = \get(a) = t
+\]
+
+Therefore $t \oplus s_0 = t$. By a symmetric argument using $\bot \sqcup a = a$:
+\[
+\get(\bot \sqcup a) = \get(\bot) \oplus \get(a) = s_0 \oplus t = t
+\]
+
+So $s_0$ is a two-sided identity for $\oplus$.
+\ps{OK}
+
+\medskip
+\noindent\emph{Commutativity of $\oplus$.}
+Let $s, t \in S$ be arbitrary. By surjectivity (L3), choose fresh $a, b \in \mathbb{S}$ with $\get(a) = s$ and $\get(b) = t$.
+
+By (L2):
+\[
+\get(a \sqcup b) = \get(a) \oplus \get(b) = s \oplus t
+\]
+
+By commutativity of $\sqcup$ (L4):
+\[
+a \sqcup b = b \sqcup a
+\]
+
+Applying $\get$ and (L2) to the right hand side:
+\[
+\get(b \sqcup a) = \get(b) \oplus \get(a) = t \oplus s
+\]
+
+Since $\get(a \sqcup b) = \get(b \sqcup a)$, we conclude:
+\[
+s \oplus t = t \oplus s
+\]
+
+Since $s, t$ were arbitrary, $\oplus$ is commutative. 
+
+
+This completes the proof of necessity. \ps{OK} \qed
+
+\medskip
+\noindent\textbf{($\Leftarrow$) Sufficiency: Commutative monoid implies liftability}
+
+\medskip
+\noindent Assume that $T$ is a commutative monoid. We construct a valid $\R$-lifting explicitly.
+
+\medskip
+
+\noindent\emph{Construction:} We define $T\R  = (\mathbb{S}, \bot, \Delta')$ as follows: 
+
+\begin{itemize}
+\item \textbf{Initial element:} $\bot := \lambda r.\, s_0$, the constant function returning $s_0$.
+
+\item \textbf{Merge operator:} $(f \sqcup g)(r) := f(r) \oplus g(r)$, applied pointwise.
+
+\item \textbf{Observation function:} $\get(f) := \bigoplus_{r \in R} f(r)$, the fold of $\oplus$ over all replica values.
+\end{itemize}
+
+
+
+
+
+\noindent\emph{Construction.} Let $R$ be a finite set of replica identifiers \ps{One interesting (but not directly related) question is how necesary this assumption is. For instance, what happens is the systme is anonymous. This can be useful to bound metadata usage}. \ap{The replica identifiers here, simplify the get function w.r.t freshness constraints. I will try to find a way to eliminate this.}
+
+
+Define:
+\[
+T\R := (R \to T)
+\]
+that is, the type of functions assigning a value in $T$ to each replica, which we think of as a state vector. Define:
+
+\begin{itemize}
+\item \textbf{Initial element:} $\bot := \lambda r.\, e$, the constant function returning $e$.
+
+\item \textbf{Merge operator:} $(f \sqcup g)(r) := f(r) \oplus g(r)$, applied pointwise.
+
+\item \textbf{Observation function:} $\get(f) := \bigoplus_{r \in R} f(r)$, the fold of $\oplus$ over all replica values.
+\end{itemize}
+
+Each replica $r$ maintains only its own coordinate, so replica $r$'s update is:
+\[
+\delta_r(f, t)(r') := \begin{cases} 
+f(r') \oplus t & \text{if } r' = r \\
+f(r') & \text{otherwise}
+\end{cases}
+\]
+
+\ps{OK.}
+
+\medskip
+\noindent\emph{Verification of CRDT axioms.}
+
+\noindent\textit{Commutativity of $\sqcup$:} For any $f, g$ and any $r$:
+\[
+(f \sqcup g)(r) = f(r) \oplus g(r) = g(r) \oplus f(r) = (g \sqcup f)(r)
+\]
+using commutativity of $\oplus$. Hence $f \sqcup g = g \sqcup f$.
+
+\ps{We might need also that $e$ is neutral; no? This is easy: $r$, $(f \sqcup \bot)(r) = f(r) \oplus \bot(r) = f(r) \oplus e = f(r)$} \ap{The proof of e (now called $s_0$) being neutral comes from the other direction where we define the CRDT type and prove that it produces a commutative monoid.}
+
+\noindent\textit{Associativity of $\sqcup$:} Follows immediately from associativity of $\oplus$ applied pointwise.
+
+\noindent\textit{Idempotency of $\sqcup$:} This requires an additional condition. Since $\oplus$ need not be idempotent in general, we enforce idempotency structurally by the freshness discipline. Each replica update $\text{inc}_r$ is applied at most once per value, so the case $f \sqcup f$ never arises in practice. Alternatively, one can replace $T$ with the lifted multiset construction $T\R := (R \to \mathbb{N}) \otimes T$ and recover idempotency formally, at the cost of a more complex $\get$. \ps{Not sure to follow this last part.}
+
+\medskip
+\noindent\emph{Verification of the homomorphism condition (L2).}
+Let $f, g \in T\R$ be fresh with respect to one another, meaning their nonzero coordinates are disjoint: for each $r$, at most one of $f(r)$, $g(r)$ is non-initial \ps{I see.}. Then:
+\[
+\get(f \sqcup g) = \bigoplus_{r \in R} (f \sqcup g)(r) = \bigoplus_{r \in R} (f(r) \oplus g(r))
+\]
+
+Since $\oplus$ is commutative and associative, and the supports of $f$ and $g$ are disjoint:
+\[
+= \left(\bigoplus_{r \in R} f(r)\right) \oplus \left(\bigoplus_{r \in R} g(r)\right) = \get(f) \oplus \get(g)
+\]
+
+\medskip
+\noindent\emph{Verification of (L1).}
+\[
+\get(\bot) = \bigoplus_{r \in R} e = e
+\]
+using the identity law of $\oplus$ iterated over $R$.
+
+\medskip
+\noindent\emph{Verification of (L3).}
+For any $t \in T$, fix any replica $r_0 \in R$ and define $f := \lambda r.\, \text{if } r = r_0 \text{ then } t \text{ else } e$. Then $\get(f) = t \oplus e \oplus \cdots \oplus e = t$. So $\get$ is surjective. \ps{OK}
+
+\medskip
+This completes the construction and verification. Hence $(T, \oplus, e)$ admits a $\R$-lifting.
+\end{proof}
+
+\medskip
+\noindent\textbf{Conclusion}
+
+$(T, \oplus, e)$ admits a $\R$-lifting if and only if $(T, \oplus, e)$ is a commutative monoid.
+\hfill$\blacksquare$
+
+\begin{corollary}[Non-liftability of string concatenation]
+The type $(\Sigma^*, \cdot, \varepsilon)$ admits no $\R$-lifting, since string concatenation is not commutative: $\text{``AB''} \cdot \text{``CD''} = \text{``ABCD''} \neq \text{``CDAB''} = \text{``CD''} \cdot \text{``AB''}$. By the necessity direction of the theorem, no valid $\get$ can exist. \qed
+\end{corollary}
+
+
+
+
+\section{Extended Classification of Unliftable Types}
+
+\subsection{Types with No Binary Operation At All}
+
+\ps{See my point above about inducing it from the transition function.}
+
+Consider a type $T$ that carries no natural merge structure whatsoever. The canonical example is:
+\[
+T = \{0, 1\}^* / \sim
+\]
+the set of bitstrings modulo some equivalence that is not a congruence with respect to any commutative operation. More concretely:
+
+\begin{corollary}[Last-Write-Wins Register]
+Let $T$ be any set, with the intended sequential semantics being that the most recent write wins. The ``operation'' is:
+\[
+a \oplus b = b \quad \text{(take the rightmost value)}
+\]
+This is not commutative since $a \oplus b = b \neq a = b \oplus a$ in general. Therefore no $\R$-lifting exists.
+\end{corollary}
+
+However, this is not because the type is unliftable in principle. It is because the sequential specification itself is inherently order-dependent, and no CRDT can implement it without additional metadata. The standard resolution is to enrich $T$ with timestamps, yielding a different sequential type $(T \times \text{Timestamp}, \oplus_{\text{LWW}}, \bot)$ that is liftable. The original $T$ is unliftable but only because it is under-specified. \qed
+
+
+\subsection{Irreparably Unliftable Types}
+
+The deepest obstruction arises from types whose semantics are inherently non-monotone. A function $f : T \to T$ is monotone with respect to a partial order if:
+\[
+a \leq b \implies f(a) \leq f(b)
+\]
+CRDTs are monotone by construction --- state only moves upward in the semilattice order. Therefore:
+
+\begin{theorem}[Monotonicity Obstruction]
+If the sequential specification of $(T, \oplus, e)$ requires any operation that is non-monotone with respect to every partial order on $T$, then $T$ admits no $\R$-lifting.
+\end{theorem}
+
+The canonical example is:
+\[
+T = (\mathbb{Z}, \min, +\infty)
+\]
+considered not as an output type but as a type supporting decrement without bound. A counter that can decrease arbitrarily has no monotone CRDT representation, because any decrease would require moving downward in the lattice order, contradicting the SEC requirement that state transitions are monotone.
+
+More precisely:
+
+\begin{theorem}[Non-liftability of unbounded decrement]
+Let $T = (\mathbb{Z}, +, 0)$ with the operation set including both increment and decrement as primitive sequential operations rather than as derived from a PN-Counter lifting. Then $T$ admits no $\R$-lifting that is monotone and satisfies SEC.
+\end{theorem}
+
+\begin{proof}
+Suppose $T\R$ exists. Since SEC requires that the state lattice is a join-semilattice, the state space must have a partial order $\leq$ such that every update is monotone increasing. But the decrement operation $d : T\R \to T\R$ must satisfy:
+\[
+\get(d(a)) = \get(a) - 1 < \get(a)
+\]
+
+So $d$ strictly decreases the observable value. For $d$ to be monotone, we need $d(a) \geq a$ in the lattice order, yet $\get$ must be order-preserving, so $\get(d(a)) \geq \get(a)$, contradicting $\get(d(a)) = \get(a) - 1$. Therefore no such lifting exists. \qed
+\end{proof}
+
+\medskip
+\noindent\textbf{Remark.} The PN-Counter resolves this not by lifting $(\mathbb{Z}, +, 0)$ directly, but by changing the type to a pair of monotone counters $(\mathbb{N} \times \mathbb{N}, \oplus_{\text{PN}}, (0,0))$ whose $\get$ computes the difference. The integer type itself remains unliftable.
+
+\begin{table*}[h]
+    \centering
+         \begin{tabular}{|l|c|l|}
+\hline
+\textbf{Type class} & \textbf{Liftable?} & \textbf{Reason} \\
+\hline
+Commutative monoids & \checkmark Yes & Constructive lifting exists \\
+$(\mathbb{N}, +, 0)$, $(\mathbb{B}, \lor, \bot)$ & & (Theorem~1) \\
+\hline
+Non-commutative monoids & $\times$ No & Commutativity of $\sqcup$ forces \\
+$(\Sigma^*, \cdot, \varepsilon)$ & & commutativity of $\oplus$ \\
+\hline
+Non-associative types & $\times$ No & Associativity of $\sqcup$ forces \\
+$(\mathbb{Z}, -, 0)$ & & associativity of $\oplus$ \\
+\hline
+Non-monotone types & $\times$ No & SEC monotonicity is violated \\
+$(\mathbb{Z}, +, 0)$ with decrement & & \\
+\hline
+Under-specified types & $\times$ No directly & Liftable only after adding \\
+(LWW register) & \checkmark with enrichment & metadata to the type \\
+\hline
+    \end{tabular}
+    \caption{classification of types with respect to liftability}
+    \label{tab:liftabletypeclassification}
+\end{table*}

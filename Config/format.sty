@@ -1,0 +1,172 @@
+\usepackage{amsmath,amsthm,mathtools,thmtools,mathtools,stmaryrd}
+\usepackage{mathtools}
+\usepackage[toc,page]{appendix}
+\usepackage{balance}
+\usepackage{xr-hyper}
+
+
+\usepackage[final]{listings}
+% Define Language
+\lstdefinelanguage{pgkeysLang}
+{
+  % list of keywords
+  morekeywords={
+    FOR,
+    WITHIN,
+    EXCLUSIVE,
+    MANDATORY,
+    SINGLETON,
+    IDENTIFIER,
+    OPTIONAL,
+    MATCH,
+    WHERE,
+    NOT,
+    OF,
+    OR,
+    AND,
+    EXISTS,
+    RETURN,
+    IN,
+    IS,
+    NULL,
+    CREATE,
+    GRAPH,
+    TYPE,
+    STRING,
+    INT32,
+    DATE,
+    STRICT,
+    hasKey,
+    FunctionalProperty,
+    context,
+    test,
+    unique,
+    key,
+    selector,
+    field,
+    allInstances,
+    isUnique,
+    Tuple,
+    class,
+    extent,
+    relationship,
+    inverse,
+    attribute
+  },
+  sensitive=false, % keywords are not casesensitive
+  morecomment=[l]{//}, % l is for line comment
+  morecomment=[s]{/*}{*/}, % s is for start and end delimiter
+  morestring=[b]" % defines that strings are enclosed in double quotes
+}
+
+\usepackage{svg}
+
+% Define Colors
+\usepackage{color}
+\usepackage[table,dvipsnames,svgnames,table]{xcolor}
+\definecolor{eclipseBlue}{RGB}{42,0.0,255}
+\definecolor{eclipseGreen}{RGB}{63,127,95}
+\definecolor{eclipsePurple}{RGB}{127,0,85}
+
+
+% Set Language
+\lstset{
+  language={pgkeysLang},
+  basicstyle=\ttfamily,% Global Code Style
+  extendedchars=true, % Allows 256 instead of 128 ASCII characters
+  tabsize=2, % number of spaces indented when discovering a tab 
+  columns=fullflexible, % make all characters equal width
+  keepspaces=true, % does not ignore spaces to fit width, convert tabs to spaces
+  showstringspaces=false, % lets spaces in strings appear as real spaces
+  breaklines=true, % wrap lines if they don't fit
+%  numbers=left, % show line numbers at the left
+%  numberstyle=\tiny\ttfamily, % style of the line numbers
+  commentstyle=\color{eclipseGreen}, % style of comments
+  keywordstyle=\color{eclipsePurple}, % style of keywords
+  stringstyle=\color{eclipseBlue}, % style of strings
+  escapeinside={(*}{*)}, % escape symbols
+  aboveskip=2.5pt,
+  belowskip=1.5pt,
+  captionpos=b
+}
+
+
+\usepackage[T1]{fontenc} % better output for tt fonts
+
+\lstset{
+    basicstyle=\small \ttfamily,  % match \texttt font
+    columns=fullflexible,  % avoids weird spacing in tt font
+   keepspaces=true,        % preserve spaces
+    moredelim=**[is][\color{red}]{§}{§},
+    frame=single,                 % simple box around the listing
+    frameround=tttt,               % rounded corners (optional)
+    rulecolor=\color{black},       % frame color
+    mathescape=true
+    }
+
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart} % <-- needed for rectangle split
+
+\usepackage{xspace}
+\usepackage{multirow}
+
+\usepackage{paralist}
+
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable}
+\newcounter{takeaway}
+\newtcolorbox[use counter=takeaway]{keytakeaway}[1][]{
+    colback=gray!15, 
+    colframe=gray!50, 
+    coltitle=black,  
+    fonttitle=\bfseries\small,
+    fontupper=\small, 
+    fonttitle=\bfseries,
+    boxrule=0.2mm,
+    arc=2mm, 
+    breakable,
+    boxsep=2pt,    % Space between the content and the frame
+    left=2pt,      % Space on the left side
+    right=2pt,     % Space on the right side
+    top=2pt,       % Space on the top
+    bottom=2pt,    % Space on the bottom
+    title=Takeaway \#\thetakeaway
+}
+\newtheorem{simpletakeaway}{\textbf{Takeaway}}
+% \usepackage{thm-restate}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}
+
+\newcommand{\justification}[1]{\ensuremath{\footnotesize\text{{\color{Gray}{/*~#1}~*/}}}}
+
+\newcommand{\precondition}{\ensuremath{\mathbf{pre:}}}
+\newcommand{\postcondition}{\ensuremath{\mathbf{ensures:}}}
+\newcommand{\returnvalue}{\ensuremath{\mathbf{ret:}}}
+\newcommand{\effects}{\ensuremath{\mathbf{eff:}}}
+
+\newcommand{\prefix}{\ensuremath{\sqsubseteq}}
+
+% \let\paragraphorig=\paragraph
+% \renewcommand{\paragraph}[1]{\paragraphorig{\textbf{#1}}}
+
+\newenvironment{sketch}{\emph{Proof sketch:}}{\qed\medskip}
+
+% \renewcommand{\paragraph}[1]{\paragraphorig{\textbf{#1}}}
+
+% Macro: two-column equation
+\newcommand{\twoColEq}[2]{%
+\begin{flalign*}
+#1 &&#2
+\end{flalign*}%
+}
+
+% Change the numbering of examples
+\let\example\undefined
+\let\endexample\undefined
+\theoremstyle{acmdefinition}
+\newtheorem{example}{Example}
