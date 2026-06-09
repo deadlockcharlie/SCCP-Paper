@@ -1,1 +1,19 @@
-\section{Introduction}
+\section{Introduction}\label{sec:introduction}
+
+Conflict-free Replicated Data Types (CRDTs) have emerged as a fundamental building block for distributed systems, enabling replicas to achieve eventual consistency without coordination. By construction, CRDTs guarantee that concurrent updates commute, allowing replicas to apply operations in any order while converging to the same state. This property makes CRDTs particularly attractive for geo-replicated systems, collaborative applications, and edge computing scenarios where low latency and high availability are paramount.
+
+Despite their theoretical elegance and practical utility, designing CRDTs remains a challenging endeavor. Each new data type requires careful consideration of how to encode operations, resolve conflicts, and ensure convergence. The design process is often ad-hoc and error-prone, requiring deep expertise in concurrency theory and distributed systems. While several CRDTs for common data types (counters, sets, registers) are well-established, extending these principles to arbitrary sequential data types has proven difficult. This raises a fundamental question: \emph{can we systematically derive CRDTs from their sequential counterparts?}
+
+In this paper, we address this question by establishing a formal connection between sequential types and CRDTs through the lens of \emph{liftability}. We show that sequential types possessing certain algebraic properties can be systematically lifted to CRDTs, providing a principled approach to CRDT design. Our main contribution is a characterization theorem demonstrating that a sequential type is liftable to a CRDT if and only if it forms a commutative monoid under its induced binary operator. This result provides both a necessary and sufficient condition for liftability, offering designers a clear criterion for determining whether a sequential type can be transformed into a CRDT.
+
+The implications of this characterization are far-reaching. First, it provides a framework for understanding existing CRDTs, showing how they arise naturally from the algebraic structure of their sequential counterparts. Second, it offers a systematic methodology for designing new CRDTs: identify the algebraic properties of the sequential type, verify the commutative monoid conditions, and construct the lifted CRDT accordingly. Third, it reveals fundamental limitations, identifying sequential types that cannot be directly lifted and thus require alternative replication strategies.
+
+\paragraph{Contributions.} We make the following contributions:
+\begin{itemize}
+\item We formalize the notion of liftability, defining when a sequential type can be systematically transformed into a CRDT while preserving its observable behavior.
+\item We prove a characterization theorem establishing that liftability is equivalent to the sequential type forming a commutative monoid.
+\item We demonstrate how this framework unifies and explains existing CRDT designs, providing insights into their algebraic foundations.
+\item We discuss implications for CRDT design methodology and identify classes of sequential types that admit or preclude lifting.
+\end{itemize}
+
+\paragraph{Organization.} The remainder of this paper is organized as follows. Section~\ref{sec:background} provides necessary background on sequential types, CRDTs, and algebraic structures. Section~\ref{sec:crdtliftability} presents our formal framework for liftability and proves the characterization theorem. We conclude with a discussion of related work and future directions.
