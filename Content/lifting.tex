@@ -1,6 +1,9 @@
 \section{CRDT Liftability} \label{sec:crdtliftability}
 % \ap{A lot of complexity for this proof is hidden in the get function. Is there a way to characterise it in more detail?}
 
+\ps{Explain and illustrate the key definitions}
+
+
 \begin{definition}[Sequential Type]
 A sequential type $T = (S,s_0, \Delta)$  is a triple
     where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
@@ -11,13 +14,21 @@ A sequential type $T = (S,s_0, \Delta)$  is a triple
 % \ps{I think you should start with the definition of liftability before characterizing it. This can be extracted from the proof below.}
 
 \begin{definition}[Induced binary operator]
-Given a sequential type $T$, we define the binary operator \footnote{The binary operator $\oplus$ is well-defined only when the transition system is \emph{confluent}. } $\oplus: S \times S \to S$ induced by the transition function $\Delta$ such that for any states $s , s', s'' \in S$, $s \oplus s' = s''$ by applying the union of the operation multi-sets that lead to states $s$ and $s'$ respectively. Formally, if $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta ^* (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$
+  Given a sequential type $T$, we define the binary operator \footnote{The binary operator $\oplus$ is well-defined only when the transition system is \emph{confluent}. \ps{define this term and discuss what does it implies.}} $\oplus: S \times S \to S$ induced by the transition function $\Delta$ such that for any states $s , s', s'' \in S$, $s \oplus s' = s''$ by applying the union of the operation multi-sets that lead to states $s$ and $s'$ respectively. Formally, if $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta ^* (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$
+
+  \ps{$\Delta^*$ is not defined.}
+  
+  \ps{In this definition, operation $op_1'$ has to be applicable to the last state reached by $op_m$. This requires the transsition function to be total.}
+
+  \ps{What about when there are several sequences leading to the same state? Do we take a canonical one?}  
 
 \end{definition}
  \begin{definition}[Liftablity]
 A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R =(\mathbb{S}, \bot, \Delta') $ with a binary operator $\sqcup$, an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
 
 % and initial element $\bot$, and an observation function $\get : T\R \to T$, satisfying:
+
+\ps{Recall that this is the definition of a state-based CRDT (i.e., a merge semi-lattice.)}
 
 \begin{itemize}
 \item[(L1)] $\get(\bot) = s_0$
@@ -34,7 +45,8 @@ A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R =(\
 % \ps{One thing also that matters is the assumption about $\oplus$. In general, a data type has a transition function. Maybe you can relate the two, e.g., by saying that $\oplus$ is induced by the transition function: for any two states $s$, $s'$ such that for some operation $op$ $op(s)=s'$ then $s \oplus s' = s'$.}
 
 \begin{theorem}[Liftability Characterization]
-A sequential type $T$ is liftable via  $\R$ if $~T$ is a commutative monoid.
+  A sequential type $T$ is liftable via  $\R$ if $~T$ is a commutative monoid.
+  \ps{Well, this is not really $T$ but instead $(\oplus,S)$.}
 \end{theorem}
 
 \begin{proof}
