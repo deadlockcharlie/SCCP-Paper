@@ -12,6 +12,7 @@
 *.cb2
 .*.lb
 
+
 # LaTeX intermediate files
 *.dvi
 *.xdv
@@ -112,7 +113,7 @@ Thumbs.db
 .idea/
 
 # PDF output (uncomment if you don't want to track PDFs)
-# *.pdf
+*.pdf
 
 # Specific to this project
 *.axp
