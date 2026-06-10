@@ -28,7 +28,9 @@ A sequential type $T = (S,s_0, \Delta)$  is a triple
     A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \le, \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, partially ordered by a comparison operator $\le$ and an initial state $\bot \in \mathbb{S}$. 
     Other states are derived from this initial state via a set of update operations $u$. 
     CRDT state is monotonically non-decreasing across updates i.e. $u(s)=s' \Rightarrow s \le s'$.     
-    A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$. 
+    A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$.
+
+    \ps{In this definition $\leq$ is the ordering implied by $\sqcup$ (see PG-CRDT paper). Thus $\leq$ can be omitted.}
 \end{definition}
 
 
@@ -147,7 +149,8 @@ This completes the proof of necessity. \ps{OK} \qed
 
 \medskip
 
-\noindent\emph{Construction:} We define $T\R  = (\mathbb{S}, \bot, \Delta')$ as follows: 
+\noindent\emph{Construction:} We define $T\R  = (\mathbb{S}, \bot, \Delta')$ as follows:
+\ps{I do not understand, $T\R$ should be a CRDT. So why using $\Delta'$ here?}
 
 \begin{itemize}
 \item \textbf{Initial element:} $\bot := \lambda r.\, s_0$, the constant function returning $s_0$.
@@ -157,6 +160,7 @@ This completes the proof of necessity. \ps{OK} \qed
 \item \textbf{Observation function:} $\get(f) := \bigoplus_{r \in R} f(r)$, the fold of $\oplus$ over all replica values.
 \end{itemize}
 
+\ps{In what precedes, there is no definition of $\mathbb{S}$. From the definition of $\bot$ it should be a set of functions??}
 
 
 
