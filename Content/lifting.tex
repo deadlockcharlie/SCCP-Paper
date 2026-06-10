@@ -22,9 +22,19 @@ A sequential type $T = (S,s_0, \Delta)$  is a triple
 
   \ps{What about when there are several sequences leading to the same state? Do we take a canonical one?}  
 
+\ap{The original definition of CRDT also defines a query operator in the tuple but never formally specifies its details. Do we include it here?}
+
+\begin{definition}[CRDT]
+    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \le, \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, partially ordered by a comparison operator $\le$ and an initial state $\bot \in \mathbb{S}$. 
+    Other states are derived from this initial state via a set of update operations $u$. 
+    CRDT state is monotonically non-decreasing across updates i.e. $u(s)=s' \Rightarrow s \le s'$.     
+    A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$. 
+\end{definition}
+
+
 \end{definition}
  \begin{definition}[Liftablity]
-A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R =(\mathbb{S}, \bot, \Delta') $ with a binary operator $\sqcup$, an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
+A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (\mathbb{S}, \le, \bot,u, \sqcup)$ with an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
 
 % and initial element $\bot$, and an observation function $\get : T\R \to T$, satisfying:
 
@@ -102,7 +112,7 @@ So $s_0$ is a two-sided identity for $\oplus$.
 
 \medskip
 \noindent\emph{Commutativity of $\oplus$.}
-Let $s, t \in S$ be arbitrary. By surjectivity (L3), choose fresh $a, b \in \mathbb{S}$ with $\get(a) = s$ and $\get(b) = t$.
+Let $s, t \in S$ be arbitrary. By surjectivity (L3), choose $a, b \in \mathbb{S}$ with $\get(a) = s$ and $\get(b) = t$.
 
 By (L2):
 \[
@@ -151,7 +161,9 @@ This completes the proof of necessity. \ps{OK} \qed
 
 
 
-\noindent\emph{Construction.} Let $R$ be a finite set of replica identifiers \ps{One interesting (but not directly related) question is how necesary this assumption is. For instance, what happens is the systme is anonymous. This can be useful to bound metadata usage}. \ap{The replica identifiers here, simplify the get function w.r.t freshness constraints. I will try to find a way to eliminate this.}
+\noindent\emph{Construction.} Let $R$ be a finite set of replica identifiers
+
+\ps{One interesting (but not directly related) question is how necesary this assumption is. For instance, what happens is the systme is anonymous. This can be useful to bound metadata usage}. \ap{The replica identifiers here, simplify the get function w.r.t freshness constraints. I will try to find a way to eliminate this.}
 
 
 Define:
@@ -191,7 +203,10 @@ using commutativity of $\oplus$. Hence $f \sqcup g = g \sqcup f$.
 
 \noindent\textit{Associativity of $\sqcup$:} Follows immediately from associativity of $\oplus$ applied pointwise.
 
-\noindent\textit{Idempotency of $\sqcup$:} This requires an additional condition. Since $\oplus$ need not be idempotent in general, we enforce idempotency structurally by the freshness discipline. Each replica update $\text{inc}_r$ is applied at most once per value, so the case $f \sqcup f$ never arises in practice. Alternatively, one can replace $T$ with the lifted multiset construction $T\R := (R \to \mathbb{N}) \otimes T$ and recover idempotency formally, at the cost of a more complex $\get$. \ps{Not sure to follow this last part.}
+\noindent\textit{Idempotency of $\sqcup$:} This follows from the disjoint union in the definition of $\oplus$. Since merge is performed pointwise, every operation is only counted once in the binary operator. Thus, remaining idempotent.  
+
+
+% This requires an additional condition. Since $\oplus$ need not be idempotent in general, we enforce idempotency structurally by the freshness discipline. Each replica update $\text{inc}_r$ is applied at most once per value, so the case $f \sqcup f$ never arises in practice. Alternatively, one can replace $T$ with the lifted multiset construction $T\R := (R \to \mathbb{N}) \otimes T$ and recover idempotency formally, at the cost of a more complex $\get$. \ps{Not sure to follow this last part.}
 
 \medskip
 \noindent\emph{Verification of the homomorphism condition (L2).}
