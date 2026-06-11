@@ -11,7 +11,7 @@ Formally, we define a sequential type as follows:
 \begin{definition}[Sequential Type]
 A sequential type $T = (S,s_0, \Delta)$  is a triple
     where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
-    We write $s \xrightarrow{op_1 \dots op_n} s'$ when $\Delta(s, \{op_1 \dots op_n\}) = s'$ and 
+    We write $s \xrightarrow{op_1 \dots op_n} s'$ when $\Delta(s, \{op_1 \dots op_n\}) = s'$. 
 \end{definition}
 
 We can define a binary operator ($\oplus$) over the set of states that a sequential type can achieve.
@@ -20,7 +20,7 @@ Formally, we define this binary operator as follows:
 
 \begin{definition}[Induced binary operator]
   Given a sequential type $T$, a binary operator $\oplus: S \times S \to S$ is defined such that for states $s , s', s'' \in S$, $s \oplus s' = s''$ such that $s''$ preserves the effects of operations that achieved $s$ and $s'$ from $s_0$. 
-If $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$.
+If $s_0 \xrightarrow{op_1 \dots  op_m} s$ and $s_0 \xrightarrow{op_1' \dots  op_n'} s'$. Then, $s \oplus s' = \Delta (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$.
 \end{definition}
 
 \ap{discuss the condition for well-definedness via confluence.}
@@ -46,9 +46,6 @@ delivered,} all parties apply the same set of operations on a shared object.
 Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} \ap{cite paper}. 
 
 A shared type that satisfies strong eventual consistency is called a \emph{Conflict-free Replicated Datatype} (CRDT). 
-
-
-
 A CRDT is defined via a state representation, a set of query operations to read the state, a set of update operations, and a merge operator to merge any two states.
 A replica independently updates its local copy of a CRDT.
 In order to include remote updates, it merges the remote states into the local copy.
@@ -80,7 +77,7 @@ Formally, a CRDT is defined as follows.
 
 
 
-\begin{example}[Counter CRDTs]
+\begin{example}[Counter CRDTs] \label{ex:counterCRDT}
   A basic CRDT example is a grow-only counter.
  % For each replica $r$, its internal state maps to an integer $C(r)$ that tracks the number of increments performed by $r$.
   Each replica $r$ maintains an integer $C(r)$ counting its increments.

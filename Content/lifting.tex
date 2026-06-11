@@ -56,8 +56,13 @@ A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (
  \end{definition}
 
 
- \ap{Illustrate this definition with an example.}
+%  \ap{Illustrate this definition with an example.}
 % \ps{One thing also that matters is the assumption about $\oplus$. In general, a data type has a transition function. Maybe you can relate the two, e.g., by saying that $\oplus$ is induced by the transition function: for any two states $s$, $s'$ such that for some operation $op$ $op(s)=s'$ then $s \oplus s' = s'$.}
+
+Consider the example of a CRDT presented in Example \ref{ex:counterCRDT}. 
+A grow only counter is a lifting from a sequential counter without a decrement operation. 
+
+
 
 \begin{theorem}[Liftability Characterization]
   A sequential type $T$ \ap{add $\oplus$ to this definition} is liftable via  $\R$ if $(\oplus,S)$ is a commutative monoid.
