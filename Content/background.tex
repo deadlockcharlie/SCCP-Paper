@@ -18,8 +18,8 @@ We can define a binary operator ($\oplus$) over the set of states that a sequent
 This binary operator allows folding two states into one while preserving the intention of operations used to achieve said states. 
 Formally, we define this binary operator as follows:
 
-\begin{definition}[Intention-preserving]
-  Operator $\oplus$ is said \emph{intention-preserving} when for any two states $s$ and $s'$, for any two sequences of operations $\sigma$ and $\sigma'$ such that $\Delta(s_0,\sigma)=s$ and $\Delta(s_0,\sigma')=s'$, there exists a sequences $\lambda$ with $ops(\lambda)=ops(\sigma) \cup ops(\sigma')$ such that $\Delta(s_0,\lambda)=s \oplus s'$
+\begin{definition}[Intention-preserving]  
+  Operator $\oplus$ is said \emph{intention-preserving} when for any two states $s$ and $s'$, for any two sequences of operations $\sigma$ and $\sigma'$ such that $\Delta(s_0,\sigma)=s$ and $\Delta(s_0,\sigma')=s'$, there exists a sequences $\lambda$ with $ops(\lambda)=ops(\sigma) \cup ops(\sigma')$ such that $\Delta(s_0,\lambda)=s \oplus s'$, where for some sequnece $\epsilon$, $ops(\epsilon)$ denotes the bag of operations in $\epsilon$.
 \end{definition}
 
 \begin{definition}[Induced binary operator]
