@@ -16,7 +16,11 @@ A sequential type $T = (S,s_0, \Delta)$  is a triple
 
 We can define a binary operator ($\oplus$) over the set of states that a sequential type can achieve.
 This binary operator allows folding two states into one while preserving the intention of operations used to achieve said states. 
-Formally, we define this binary operator as follows:  
+Formally, we define this binary operator as follows:
+
+\begin{definition}[Intention-preserving]
+  Operator $\oplus$ is said \emph{intention-preserving} when for any two states $s$ and $s'$, for any two sequences of operations $\sigma$ and $\sigma'$ such that $\Delta(s_0,\sigma)=s$ and $\Delta(s_0,\sigma')=s'$, there exists a sequences $\lambda$ with $ops(\lambda)=ops(\sigma) \cup ops(\sigma')$ such that $\Delta(s_0,\lambda)=s \oplus s'$
+\end{definition}
 
 \begin{definition}[Induced binary operator]
   Given a sequential type $T$, a binary operator $\oplus: S \times S \to S$ is defined such that for states $s , s', s'' \in S$, $s \oplus s' = s''$ such that $s''$ preserves the effects of operations that achieved $s$ and $s'$ from $s_0$. 
