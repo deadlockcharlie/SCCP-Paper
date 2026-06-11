@@ -1,40 +1,40 @@
 \section{CRDT Liftability} \label{sec:crdtliftability}
+
 % \ap{A lot of complexity for this proof is hidden in the get function. Is there a way to characterise it in more detail?}
 
-\ps{Explain and illustrate the key definitions}
+% \ps{Explain and illustrate the key definitions}
 
 
-\begin{definition}[Sequential Type]
-A sequential type $T = (S,s_0, \Delta)$  is a triple
-    where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
+% \begin{definition}[Sequential Type]
+% A sequential type $T = (S,s_0, \Delta)$  is a triple
+%     where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
     
-    We write $s \xrightarrow{op} s'$ when $\Delta(s, op) = s'$
-\end{definition}
+%     We write $s \xrightarrow{op} s'$ when $\Delta(s, op) = s'$
+% \end{definition}
 
-% \ps{I think you should start with the definition of liftability before characterizing it. This can be extracted from the proof below.}
+% % \ps{I think you should start with the definition of liftability before characterizing it. This can be extracted from the proof below.}
 
-\begin{definition}[Induced binary operator]
-  Given a sequential type $T$, we define the binary operator \footnote{The binary operator $\oplus$ is well-defined only when the transition system is \emph{confluent}. \ps{define this term and discuss what does it implies.}} $\oplus: S \times S \to S$ induced by the transition function $\Delta$ such that for any states $s , s', s'' \in S$, $s \oplus s' = s''$ by applying the union of the operation multi-sets that lead to states $s$ and $s'$ respectively. Formally, if $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta ^* (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$
+% \begin{definition}[Induced binary operator]
+%   Given a sequential type $T$, we define the binary operator $\oplus: S \times S \to S$ induced by the transition function $\Delta$ such that for any states $s , s', s'' \in S$, $s \oplus s' = s''$ by applying the union of the operation multi-sets that lead to states $s$ and $s'$ respectively. Formally, if $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta ^* (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$. $\Delta ^*$ is closure of operations, applied to the initial state $s_0$.
 
-  \ps{$\Delta^*$ is not defined.}
+
+%   \ap{try to properly specify the confluence of the $\oplus$ operator as a property of the transition system. Relate this to intention preservation possibly. }
+
+%   The binary operator $\oplus$ is well-defined only when the transition system is \emph{confluent}. 
+%   A transition system is confluent if it satisfies the Church-Rosser theorem which states that the order in which operations are evaluated is irrelevant to the final value. 
+%   This allows a transition system to reorder operations if the reordering does not cause the final value of a sequence of operations to change. \ps{define this term and discuss what does it implies.}
+
+%   \ps{$\Delta^*$ is not defined.}
   
-  \ps{In this definition, operation $op_1'$ has to be applicable to the last state reached by $op_m$. This requires the transsition function to be total.}
+%   \ps{In this definition, operation $op_1'$ has to be applicable to the last state reached by $op_m$. This requires the transsition function to be total.}
 
-  \ps{What about when there are several sequences leading to the same state? Do we take a canonical one?}  
+%   \ps{What about when there are several sequences leading to the same state? Do we take a canonical one?}  
 
-\ap{The original definition of CRDT also defines a query operator in the tuple but never formally specifies its details. Do we include it here?}
-
-\begin{definition}[CRDT]
-    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \le, \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, partially ordered by a comparison operator $\le$ and an initial state $\bot \in \mathbb{S}$. 
-    Other states are derived from this initial state via a set of update operations $u$. 
-    CRDT state is monotonically non-decreasing across updates i.e. $u(s)=s' \Rightarrow s \le s'$.     
-    A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$.
-
-    \ps{In this definition $\leq$ is the ordering implied by $\sqcup$ (see PG-CRDT paper). Thus $\leq$ can be omitted.}
-\end{definition}
+% \ap{The original definition of CRDT also defines a query operator in the tuple but never formally specifies its details. Do we include it here?}
 
 
-\end{definition}
+
+% \end{definition}
  \begin{definition}[Liftablity]
 A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (\mathbb{S}, \le, \bot,u, \sqcup)$ with an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
 
@@ -42,6 +42,7 @@ A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (
 
 \ps{Recall that this is the definition of a state-based CRDT (i.e., a merge semi-lattice.)}
 
+\ap{need more explanation for L2. saying that merging the states does not loose any operations when using $\oplus$.}
 \begin{itemize}
 \item[(L1)] $\get(\bot) = s_0$
 \item[(L2)] For any $s_1, s_2 \in \mathbb{S}, \get(s_1 \sqcup s_2) = \get(s_1) \oplus \get(s_2)$
@@ -54,15 +55,18 @@ A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (
 \end{itemize}
  \end{definition}
 
+
+ \ap{Illustrate this definition with an example.}
 % \ps{One thing also that matters is the assumption about $\oplus$. In general, a data type has a transition function. Maybe you can relate the two, e.g., by saying that $\oplus$ is induced by the transition function: for any two states $s$, $s'$ such that for some operation $op$ $op(s)=s'$ then $s \oplus s' = s'$.}
 
 \begin{theorem}[Liftability Characterization]
-  A sequential type $T$ is liftable via  $\R$ if $~T$ is a commutative monoid.
-  \ps{Well, this is not really $T$ but instead $(\oplus,S)$.}
+  A sequential type $T$ \ap{add $\oplus$ to this definition} is liftable via  $\R$ if $(\oplus,S)$ is a commutative monoid.
+%   \ps{Well, this is not really $T$ but instead $(\oplus,S)$.}
 \end{theorem}
 
 \begin{proof}
 We prove both directions separately.
+
 \medskip
 \noindent\textbf{($\Rightarrow$) Necessity: Liftability implies commutative monoid}
 \medskip
@@ -245,9 +249,15 @@ This completes the construction and verification. Hence $(T, \oplus, e)$ admits 
 $(T, \oplus, e)$ admits a $\R$-lifting if and only if $(T, \oplus, e)$ is a commutative monoid.
 \hfill$\blacksquare$
 
-\begin{corollary}[Non-liftability of string concatenation]
-The type $(\Sigma^*, \cdot, \varepsilon)$ admits no $\R$-lifting, since string concatenation is not commutative: $\text{``AB''} \cdot \text{``CD''} = \text{``ABCD''} \neq \text{``CDAB''} = \text{``CD''} \cdot \text{``AB''}$. By the necessity direction of the theorem, no valid $\get$ can exist. \qed
-\end{corollary}
+\ap{present some existing CRDTs and show how this theorem applies to sequential types to get a CRDT.}
+
+
+
+\ap{Further extends to the fact that the product of two comm monoids is a monoid. }
+
+% \begin{corollary}[Non-liftability of string concatenation]
+% The type $(\Sigma^*, \cdot, \varepsilon)$ admits no $\R$-lifting, since string concatenation is not commutative: $\text{``AB''} \cdot \text{``CD''} = \text{``ABCD''} \neq \text{``CDAB''} = \text{``CD''} \cdot \text{``AB''}$. By the necessity direction of the theorem, no valid $\get$ can exist. \qed
+% \end{corollary}
 
 
 

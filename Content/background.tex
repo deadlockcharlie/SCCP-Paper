@@ -1,1 +1,96 @@
 \section{Background} \label{sec:background}
+
+\ap{provide a illustation for CRDTs}
+\subsection{Sequential Types}
+We begin the discussion with a definition of a sequential type.
+A sequential type captures the behavior of an object whose state mutates by applying operations one at a time. 
+Each operation transforms the current state into the next, starting from a well defined initial state and following a deterministic transition relation that governs an object's behavior. 
+The sequence of operations on a sequential type---called a history---is a total order.
+Formally, we define a sequential type as follows: 
+
+\begin{definition}[Sequential Type]
+A sequential type $T = (S,s_0, \Delta)$  is a triple
+    where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
+    We write $s \xrightarrow{op_1 \dots op_n} s'$ when $\Delta(s, \{op_1 \dots op_n\}) = s'$ and 
+\end{definition}
+
+We can define a binary operator ($\oplus$) over the set of states that a sequential type can achieve.
+This binary operator allows folding two states into one while preserving the intention of operations used to achieve said states. 
+Formally, we define this binary operator as follows:  
+
+\begin{definition}[Induced binary operator]
+  Given a sequential type $T$, a binary operator $\oplus: S \times S \to S$ is defined such that for states $s , s', s'' \in S$, $s \oplus s' = s''$ such that $s''$ preserves the effects of operations that achieved $s$ and $s'$ from $s_0$. 
+If $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \op_n'} s'$. Then, $s \oplus s' = \Delta (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$.
+\end{definition}
+
+\ap{discuss the condition for well-definedness via confluence.}
+
+
+\subsection{Concurrent Types and Eventual Consistency}
+Unlike a sequential type, that restricts operations to execute one after the other a \emph{concurrent type} allows multiple operations to take effect simultaneously. 
+This sequence of operations is a partial order. 
+Since concurrent types admit partially ordered histories, they can be used to type shared objects. 
+
+Shared objects operate under a consistency model. 
+To byapss the limitations of CAP theorem and support availability, Eventual consistency is often the preferred model. 
+Eventual consistency states that all parties apply the same set of operations on a shared object. 
+Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} \ap{cite paper}. 
+
+A shared type that satisfies strong eventual consistency is called a \emph{Conflict-free Replicated Datatype} (CRDT). 
+
+
+
+A CRDT is defined via a state representation, a set of query operations to read the state, a set of update operations, and a merge operator to merge any two states.
+A replica independently updates its local copy of a CRDT.
+In order to include remote updates, it merges the remote states into the local copy.
+Convergence is guaranteed by requiring the merge operation to be associative, commutative, and idempotent.
+Formally, a CRDT is defined as follows.
+
+\begin{definition}[CRDT]
+    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \le \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, containing an initial state $\bot \in \mathbb{S}$. 
+    Other states are derived from this initial state via a set of update operations $u$. 
+    CRDT state is monotonically non-decreasing across updates i.e. $u(s)=s' \Rightarrow s \le s'$.     
+    A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$. 
+    Merge induces a partial ordering over the states where $s_1 \sqcup s_2 = s_3 \Rightarrow s_1 \le s_3$ and $s_2 \le s_3$
+
+    % \ps{In this definition $\leq$ is the ordering implied by $\sqcup$ (see PG-CRDT paper). Thus $\leq$ can be omitted.}
+\end{definition}
+
+
+
+% Formally, a state-based CRDT is defined by a tuple $(S,O,Q,R,\tau,\Merge)$ where %
+% $S$ is a set of states;
+% $O$ is a set of update operations;
+% $R$ is a set of responses;
+% $Q$ is a set of query operations ($S \times Q \rightarrow R$);
+% $\tau$ is a total transition function $S \times O \rightarrow S$; and
+% $\Merge \in S \times S \rightarrow S$ is a merge operator.
+% %
+% It is required that $(S,\Merge)$ forms a join-semilattice, to ensure convergence.
+% Moreover, the state ordering induced by $\Merge$ is compatible with the transition function, i.e., $x \leq y$ whenever $x \Merge y = y$ and $x \leq \tau(x,o)$, for any update $o$.
+
+
+
+\begin{example}[Counter CRDTs]
+  A basic CRDT example is a grow-only counter.
+ % For each replica $r$, its internal state maps to an integer $C(r)$ that tracks the number of increments performed by $r$.
+  Each replica $r$ maintains an integer $C(r)$ counting its increments.
+  Whenever $r$ invokes operation $incr()$, it increments its entry $C(r)$ by one.
+  Reading the counter returns the sum of all entries in $C$.
+  Merging states $C$ and $C'$ takes the maximum entry per replica: $C \Merge C'(r) = \mathit{max}\{C(r), C'(r)\}$.
+  
+  A composed CRDT is the \emph{Positive-Negative Counter}; PN-counter for short.
+  Internally, it is implemented as a pair of two grow-only counters $(P, N)$.
+  It supports $incr()$ and $decr()$, storing increments in $P$ and decrements in $N$.
+  The current value of a PN-counter reads as $P - N$.
+  Merging computes $(P \Merge P', N \Merge N')$.
+  
+  To illustrate, suppose a system with two replicas $r$ and $r'$.
+   Replica $r$ calls $incr()$ five times and $decr()$ once, reaching the internal state $(P: \{r: 5, r': 0\}, N: \{r: 1, r': 0\})$.
+  Concurrently, $r'$ calls $decr()$ twice, reaching $(P: \{r: 0, r': 0\}, N:\{r: 0, r': 2\})$.
+  Merging the two states yields $(P:\{r: 5, r': 0\}, N:\{r: 1, r': 2\})$, which represents the value $2$.
+\end{example}
+
+
+\subsection{Correctness of CRDTs}
+\ap{Present the current discussion on the approaches used to define the correctness of CRDTs. }
