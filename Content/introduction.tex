@@ -8,6 +8,15 @@ In this paper, we address this question by establishing a formal connection betw
 
 The implications of this characterization are far-reaching. First, it provides a framework for understanding existing CRDTs, showing how they arise naturally from the algebraic structure of their sequential counterparts. Second, it offers a systematic methodology for designing new CRDTs: identify the algebraic properties of the sequential type, verify the commutative monoid conditions, and construct the lifted CRDT accordingly. Third, it reveals fundamental limitations, identifying sequential types that cannot be directly lifted and thus require alternative replication strategies.
 
+\paragraph{Related Work.} The closest work to ours is Almeida's survey of CRDT
+approaches~\cite{DBLP:journals/csur/Almeida25}, which examines the role of
+commutativity, idempotence, and inflations in reusing sequential data types as
+CRDTs and highlights that CRDTs do not require commutative operations, since
+operation-based CRDTs with causal delivery can replicate non-commutative types
+such as sequences. Our results are complementary, as we study
+\emph{state-based} lifting, where merge is a commutative join-semilattice, and
+characterize it exactly as the commutative monoids.
+
 \paragraph{Contributions.} We make the following contributions:
 \begin{itemize}
 \item We formalize the notion of liftability, defining when a sequential type can be systematically transformed into a CRDT while preserving its observable behavior.

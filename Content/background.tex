@@ -25,6 +25,14 @@ If $s_0 \xrightarrow{op_1 \dots  \op_m} s$ and $s_0 \xrightarrow{op_1' \dots  \o
 
 \ap{discuss the condition for well-definedness via confluence.}
 
+\sd{For $\oplus$ to be well defined, the result must not depend on the particular
+linearization of the merged operations. We therefore assume throughout that the
+transition system is confluent, i.e., whenever two sequences
+of operations are reorderings of one another, they reach the same state. Under
+confluence, $\Delta^*$ is independent of the order in which operations are
+applied, and $\oplus$ is a total function on $S$.}
+
+
 
 \subsection{Concurrent Types and Eventual Consistency}
 Unlike a sequential type, that restricts operations to execute one after the other a \emph{concurrent type} allows multiple operations to take effect simultaneously. 
@@ -33,7 +41,8 @@ Since concurrent types admit partially ordered histories, they can be used to ty
 
 Shared objects operate under a consistency model. 
 To byapss the limitations of CAP theorem and support availability, Eventual consistency is often the preferred model. 
-Eventual consistency states that all parties apply the same set of operations on a shared object. 
+Eventual consistency states that, \sd{once all updates have been
+delivered,} all parties apply the same set of operations on a shared object.
 Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} \ap{cite paper}. 
 
 A shared type that satisfies strong eventual consistency is called a \emph{Conflict-free Replicated Datatype} (CRDT). 
@@ -94,3 +103,14 @@ Formally, a CRDT is defined as follows.
 
 \subsection{Correctness of CRDTs}
 \ap{Present the current discussion on the approaches used to define the correctness of CRDTs. }
+
+\sd{Two complementary notions of correctness recur in the literature. The first
+is convergence, i.e., any two replicas that have observed the same set of
+updates read the same value, which SEC guarantees by requiring
+$(\mathbb{S}, \sqcup)$ to form a join-semilattice~\cite{DBLP:conf/sss/ShapiroPBZ11}.
+The second is behavioral adequacy, i.e., the replicated object should realize the
+intended sequential specification, observed through a materialization (or
+observation) function~\cite{DBLP:journals/ftpl/Burckhardt14,DBLP:conf/popl/BurckhardtGYZ14}. Our
+notion of liftability, developed next, makes this second requirement precise by
+tying the observation function to the induced operator $\oplus$ of the sequential
+type.}
