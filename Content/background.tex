@@ -1,6 +1,6 @@
 \section{Background} \label{sec:background}
 
-\ap{provide a illustation for CRDTs}
+% \ap{provide a illustation for CRDTs}
 \subsection{Sequential Types}
 We begin the discussion with a definition of a sequential type.
 A sequential type captures the behavior of an object whose state mutates by applying operations one at a time. 
@@ -11,30 +11,36 @@ Formally, we define a sequential type as follows:
 \begin{definition}[Sequential Type]
 A sequential type $T = (S,s_0, \Delta)$  is a triple
     where $S$ is the set of states of an object of type $T$, $s_0 \in S $ the initial state and $\Delta: S \times Op \to S$ is the transition function mapping a state and an operation to a successor state. 
-    We write $s \xrightarrow{op_1 \dots op_n} s'$ when $\Delta(s, \{op_1 \dots op_n\}) = s'$. 
+    We write $s \xrightarrow{op} s'$ when $\Delta(s, op) = s'$. 
+    A sequence of operations, leading to a state transformation $s \xrightarrow{op_1 \dots op_n} s'$ is denoted $\Delta ^*(s, \{op_1 \dots op_n\})$.
 \end{definition}
+
 
 We can define a binary operator ($\oplus$) over the set of states that a sequential type can achieve.
-This binary operator allows folding two states into one while preserving the intention of operations used to achieve said states. 
+This binary operator allows folding two states into one. 
 Formally, we define this binary operator as follows:
 
-\begin{definition}[Intention-preserving]  
-  Operator $\oplus$ is said \emph{intention-preserving} when for any two states $s$ and $s'$, for any two sequences of operations $\sigma$ and $\sigma'$ such that $\Delta(s_0,\sigma)=s$ and $\Delta(s_0,\sigma')=s'$, there exists a sequences $\lambda$ with $ops(\lambda)=ops(\sigma) \cup ops(\sigma')$ such that $\Delta(s_0,\lambda)=s \oplus s'$, where for some sequnece $\epsilon$, $ops(\epsilon)$ denotes the bag of operations in $\epsilon$.
-\end{definition}
-
 \begin{definition}[Induced binary operator]
-  Given a sequential type $T$, a binary operator $\oplus: S \times S \to S$ is defined such that for states $s , s', s'' \in S$, $s \oplus s' = s''$ such that $s''$ preserves the effects of operations that achieved $s$ and $s'$ from $s_0$. 
-If $s_0 \xrightarrow{op_1 \dots  op_m} s$ and $s_0 \xrightarrow{op_1' \dots  op_n'} s'$. Then, $s \oplus s' = \Delta (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$.
+  Given a sequential type $T$, a binary operator $\oplus: S \times S \to S$ is defined such that for states $s , s', s'' \in S$, $s \oplus s' = s''$ and $s''$.
+% If $s_0 \xrightarrow{op_1 \dots  op_m} s$ and $s_0 \xrightarrow{op_1' \dots  op_n'} s'$. Then, $s \oplus s' = \Delta (s_0, \{op_1 \dots op_m\} \uplus \{op_1'\dots op_n'\})$.
 \end{definition}
 
-\ap{discuss the condition for well-definedness via confluence.}
+A trivially correct binary operator can always be defined for any type such that $s \oplus s' = \bot$. 
+However correct, such an operator in inutile in most cases. 
+We introduce the notion of intention-preservation to restrict such operators. 
+\begin{definition}[Intention-preservation]
+  Operator $\oplus$ is said \emph{intention-preserving} when for any two states $s$ and $s'$, for any two sequences of operations $\sigma$ and $\sigma'$ such that $\Delta(s_0,\sigma)=s$ and $\Delta(s_0,\sigma')=s'$, there exists a sequences $\lambda$ with $ops(\lambda)=ops(\sigma) \cup ops(\sigma')$ such that $\Delta(s_0,\lambda)=s \oplus s'$
+\end{definition}
 
-\sd{For $\oplus$ to be well defined, the result must not depend on the particular
-linearization of the merged operations. We therefore assume throughout that the
-transition system is confluent, i.e., whenever two sequences
-of operations are reorderings of one another, they reach the same state. Under
-confluence, $\Delta^*$ is independent of the order in which operations are
-applied, and $\oplus$ is a total function on $S$.}
+
+% \ap{discuss the condition for well-definedness via confluence.}
+
+% \sd{For $\oplus$ to be well defined, the result must not depend on the particular
+% linearization of the merged operations. We therefore assume throughout that the
+% transition system is confluent, i.e., whenever two sequences
+% of operations are reorderings of one another, they reach the same state. Under
+% confluence, $\Delta^*$ is independent of the order in which operations are
+% applied, and $\oplus$ is a total function on $S$.}
 
 
 
@@ -45,9 +51,8 @@ Since concurrent types admit partially ordered histories, they can be used to ty
 
 Shared objects operate under a consistency model. 
 To byapss the limitations of CAP theorem and support availability, Eventual consistency is often the preferred model. 
-Eventual consistency states that, \sd{once all updates have been
-delivered,} all parties apply the same set of operations on a shared object.
-Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} \ap{cite paper}. 
+Eventual consistency states that, eventually all parties apply the same set of operations on a shared object.
+Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} \cite{ShapiroPBZ11}. 
 
 A shared type that satisfies strong eventual consistency is called a \emph{Conflict-free Replicated Datatype} (CRDT). 
 A CRDT is defined via a state representation, a set of query operations to read the state, a set of update operations, and a merge operator to merge any two states.
@@ -57,7 +62,7 @@ Convergence is guaranteed by requiring the merge operation to be associative, co
 Formally, a CRDT is defined as follows.
 
 \begin{definition}[CRDT]
-    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \le \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, containing an initial state $\bot \in \mathbb{S}$. 
+    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, containing an initial state $\bot \in \mathbb{S}$. 
     Other states are derived from this initial state via a set of update operations $u$. 
     CRDT state is monotonically non-decreasing across updates i.e. $u(s)=s' \Rightarrow s \le s'$.     
     A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$. 

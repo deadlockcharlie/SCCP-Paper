@@ -36,13 +36,13 @@
 
 % \end{definition}
  \begin{definition}[Liftablity]
-A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (\mathbb{S}, \le, \bot,u, \sqcup)$ with an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
+A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (\mathbb{S}, \bot,u, \sqcup)$ with an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
 
 % and initial element $\bot$, and an observation function $\get : T\R \to T$, satisfying:
 
 \ps{Recall that this is the definition of a state-based CRDT (i.e., a merge semi-lattice.)}
 
-\ap{need more explanation for L2. saying that merging the states does not loose any operations when using $\oplus$.}
+% \ap{need more explanation for L2. saying that merging the states does not loose any operations when using $\oplus$.}
 \begin{itemize}
 \item[(L1)] $\get(\bot) = s_0$
 \item[(L2)] For any $s_1, s_2 \in \mathbb{S}, \get(s_1 \sqcup s_2) = \get(s_1) \oplus \get(s_2)$
@@ -65,104 +65,95 @@ A grow only counter is a lifting from a sequential counter without a decrement o
 
 
 \begin{theorem}[Liftability Characterization]
-  A sequential type $T$ \ap{add $\oplus$ to this definition} is liftable via  $\R$ if $(\oplus,S)$ is a commutative monoid.
+  A sequential type $T$, with a set of states $S$ and its binary operator $\oplus$ is liftable via  $\R$ iff $(\oplus,S)$ is a commutative monoid and $\oplus$ is intention-preserving.
 %   \ps{Well, this is not really $T$ but instead $(\oplus,S)$.}
 \end{theorem}
+This proof proceeds as follows: 
+First, we prove the necessity condition i.e. Assuming that T\R ~exists, we show that T is a commutative monoid. 
+Second, we prove sufficiency via a construction of a lifting for T\R.
 
-\begin{proof}
-We prove both directions separately.
+\begin{proof}[Proof (Necessity): Liftability implies commutative monoid]$ $\newline
 
-\medskip
-\noindent\textbf{($\Rightarrow$) Necessity: Liftability implies commutative monoid}
-\medskip
-\noindent
+We verify the three axioms for $(S, \oplus)$ being a commutative monoid, namely associativity and commutativity of $\oplus$ and the existence of an identity element $s_0 \in S$. 
+% \medskip
+% \noindent\textbf{($\Rightarrow$) Necessity: Liftability implies commutative monoid}
+% \medskip
+% \noindent
 
-We verify the three axioms of a commutative monoid in turn.
+% We verify the three axioms of a commutative monoid in turn.
 
 \medskip
 \noindent\emph{Associativity of $\oplus$.}
-Let $s, t, u \in S$ be arbitrary. By surjectivity (L3), choose $a, b, c \in \mathbb{S}$ with $\get(a) = s$, $\get(b) = t$, $\get(c) = u$.
+Let $s, t, u \in S$ be some arbitrary states. 
+Since a valid lifting exists, by surjectivity (L3), choose states $a, b, c \in \mathbb{S}$ such that $\get(a) = s$, $\get(b) = t$, $\get(c) = u$.
 
 % and where $a, b, c$ are mutually fresh with respect to one another (this is always achievable by considering distinct replica contributions).
 % \ap{I need to characterize this freshness better. This reads very vague.}
 
 By (L2) and associativity of $\sqcup$ (L4):
 \begin{align}
-\get(a \sqcup (b \sqcup c)) &= \get(a) \oplus \get(b \sqcup c) = s \oplus (t \oplus u) \\
-\get((a \sqcup b) \sqcup c) &= \get(a \sqcup b) \oplus \get(c) = (s \oplus t) \oplus u
+\get(a \sqcup (b \sqcup c)) &= \get(a) \oplus \get(b \sqcup c) = s \oplus (t \oplus u) \label{eqn:assoc1}\\ 
+\get((a \sqcup b) \sqcup c) &= \get(a \sqcup b) \oplus \get(c) = (s \oplus t) \oplus u \label{eqn:assoc2}
 \end{align}
 
-Since $\sqcup$ is associative, $a \sqcup (b \sqcup c) = (a \sqcup b) \sqcup c$, and applying $\get$ to both sides:
-\[
-s \oplus (t \oplus u) = (s \oplus t) \oplus u
-\]
-
+Since $\sqcup$ is associative, $a \sqcup (b \sqcup c) = (a \sqcup b) \sqcup c$. 
+From equations \ref{eqn:assoc1} and \ref{eqn:assoc2}, we have: $s \oplus (t \oplus u) = (s \oplus t) \oplus u$. 
 Since $s, t, u$ were arbitrary, $\oplus$ is associative.
-\ps{OK}
+% \ps{OK}
 
-\medskip
-\noindent\emph{Identity element.}
-Let $t \in S$ be arbitrary and choose $a \in \mathbb{S}$ with $\get(a) = t$. We need a state representing $s_0$ to merge with. By (L1), $\get(\bot) = s_0$. We need $\bot$ to act as a fresh contribution with respect to $a$, which holds at initialization since $\bot$ carries no updates.
-
-By (L2): 
-\[
-\get(a \sqcup \bot) = \get(a) \oplus \get(\bot) = t \oplus s_0
-\]
-But $\bot$ is the identity of $\sqcup$ by the CRDT definition, so $a \sqcup \bot = a$, hence:
-\[
-\get(a \sqcup \bot) = \get(a) = t
-\]
-
-Therefore $t \oplus s_0 = t$. By a symmetric argument using $\bot \sqcup a = a$:
-\[
-\get(\bot \sqcup a) = \get(\bot) \oplus \get(a) = s_0 \oplus t = t
-\]
-
-So $s_0$ is a two-sided identity for $\oplus$.
-\ps{OK}
 
 \medskip
 \noindent\emph{Commutativity of $\oplus$.}
-Let $s, t \in S$ be arbitrary. By surjectivity (L3), choose $a, b \in \mathbb{S}$ with $\get(a) = s$ and $\get(b) = t$.
+Let $s, t \in S$ be arbitrary states. By surjectivity (L3), choose $a, b \in \mathbb{S}$ with $\get(a) = s$ and $\get(b) = t$.
 
-By (L2):
-\[
-\get(a \sqcup b) = \get(a) \oplus \get(b) = s \oplus t
-\]
+By (L2): $\get(a \sqcup b) = \get(a) \oplus \get(b) = s \oplus t$
 
-By commutativity of $\sqcup$ (L4):
-\[
-a \sqcup b = b \sqcup a
-\]
+% By commutativity of $\sqcup$ (L4): $a \sqcup b = b \sqcup a$
 
-Applying $\get$ and (L2) to the right hand side:
-\[
-\get(b \sqcup a) = \get(b) \oplus \get(a) = t \oplus s
-\]
+% Applying $\get$ and (L2) to the right hand side:
+% \[
+% \get(b \sqcup a) = \get(b) \oplus \get(a) = t \oplus s
+% \]
 
-Since $\get(a \sqcup b) = \get(b \sqcup a)$, we conclude:
-\[
-s \oplus t = t \oplus s
-\]
+Since $(a \sqcup b) = (b \sqcup a)$, we conclude:
+\begin{align*}
+ get(a \sqcup b) & = get(b \sqcup a) \\ 
+ get(a) \oplus get(b) & = get(b) \oplus get(a) \\
+ s \oplus t & = t \oplus s 
+\end{align*}
 
 Since $s, t$ were arbitrary, $\oplus$ is commutative. 
 
 
-This completes the proof of necessity. \ps{OK} \qed
-
 \medskip
-\noindent\textbf{($\Leftarrow$) Sufficiency: Commutative monoid implies liftability}
+\noindent\emph{Identity element.}
+Let $t \in S$ be arbitrary and choose $a \in \mathbb{S}$ with $\get(a) = t$. 
+We need a state representing $s_0$ to merge with. By (L1), $\get(\bot) = s_0$. 
+$\bot$ is a state which carries no updates.
+% We need $\bot$ to act as a fresh contribution with respect to $a$, which holds at initialization since $\bot$ carries no updates.
 
-\medskip
-\noindent Assume that $T$ is a commutative monoid. We construct a valid $\R$-lifting explicitly.
+So, by (L2): $\get(a \sqcup \bot) = \get(a) \oplus \get(\bot) = t \oplus s_0$
 
-\medskip
+Since $\bot$ is the identity of $\sqcup$ by the CRDT definition, so $a \sqcup \bot = a$. Thus, $\get(a \sqcup \bot) = \get(a) = t$. 
+% Therefore $t \oplus s_0 = t$. 
+Since $\oplus$ must be intention preserving, $s_0$ must not contain any updates so that $t \oplus s_0 = t$. 
+Which makes $s_0 \in S$ the identity element for the commutative monoid $(\oplus, S)$. 
 
-\noindent\emph{Construction:} We define $T\R  = (\mathbb{S}, \bot, \Delta')$ as follows:
-\ps{I do not understand, $T\R$ should be a CRDT. So why using $\Delta'$ here?}
+By commutativity of $\oplus$, $s_0$ is a two-sided identity for $\oplus$.
+% \ps{OK}
+
+This completes the proof of necessity.
+\end{proof}
+
+\begin{proof}[Proof (Sufficiency): Commutative monoid implies liftability]$ $\newline
+  
+ Assume that for a type $T$, its set of states $S$ and binary operator $\oplus$ form a commutative monoid. We construct a valid $T\R$-lifting explicitly.
+
+\noindent\emph{Construction:} We define $T\R  = (\mathbb{S}, \bot, \Delta)$ as follows:
+% \ps{I do not understand, $T\R$ should be a CRDT. So why using $\Delta'$ here?}
 
 \begin{itemize}
-\item \textbf{Initial element:} $\bot := \lambda r.\, s_0$, the constant function returning $s_0$.
+\item \textbf{Initial element:} $\bot := s_0$, the constant function returning $s_0$.
 
 \item \textbf{Merge operator:} $(f \sqcup g)(r) := f(r) \oplus g(r)$, applied pointwise.
 
