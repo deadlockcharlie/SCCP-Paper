@@ -42,8 +42,6 @@ We introduce the notion of intention-preservation to restrict such operators.
 % confluence, $\Delta^*$ is independent of the order in which operations are
 % applied, and $\oplus$ is a total function on $S$.}
 
-
-
 \subsection{Concurrent Types and Eventual Consistency}
 Unlike a sequential type, that restricts operations to execute one after the other a \emph{concurrent type} allows multiple operations to take effect simultaneously. 
 This sequence of operations is a partial order. 
@@ -51,8 +49,31 @@ Since concurrent types admit partially ordered histories, they can be used to ty
 
 Shared objects operate under a consistency model. 
 To byapss the limitations of CAP theorem and support availability, Eventual consistency is often the preferred model. 
-Eventual consistency states that, eventually all parties apply the same set of operations on a shared object.
-Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} \cite{ShapiroPBZ11}. 
+Eventual consistency states that, eventually all replicas apply the same set of operations on a shared object.
+Eventual consistency is strengthened with guaranteed convergence and termination to define \emph{Strong eventual consistency} (SEC) \cite{ShapiroPBZ11}.
+Below, we recall the definition of SEC.
+
+Following \citet{rep:1754}, an abstract execution $A=(H,\vis,\ar)$ consists of an interleaving of operations executed by the replicas, or history ($H$), a visibility relation ($\vis$), a partial order that accounts for the propagation of updates in the system, and the arbitration relation ($\ar)$, a per-object total order over $H$ that helps to solve concurrency conflicts.
+%
+The order in which replica execute operations is called the program order.
+The happened-before relation ($\hb$) is the transitive closure of the union of visibility and program order \cite{rep:1754}.
+
+The phrase ``visible in replica $p$'' refers to an operation that is visible by some operation executed at replica $p$.
+
+Each object starts in some known initial state.
+The return value of a read is computed according to the semantics of prior updates to the object.
+That is, for each read operation $r$, $\resp(r)$ results from some linearization $l_{r}$ of the updates visible to $r$ consistent with $\hb$;
+what is called return value consistency in \cite{}.
+
+SEC is formally defined as the conjunction of return value consistency, together with the following three properties (see \cite{burckhart14} for a formal definition):
+\begin{itemize}
+\item (Eventual visibility)
+  An operation will eventually be visible to another operation invoked after the completion of op.
+\item (Acyclic causality)
+  $\hb$ is acyclic.
+\item (Strong convergence)
+  Reads which have the identical sets of visible writes return the same values.
+\end{itemize}
 
 A shared type that satisfies strong eventual consistency is called a \emph{Conflict-free Replicated Datatype} (CRDT). 
 A CRDT is defined via a state representation, a set of query operations to read the state, a set of update operations, and a merge operator to merge any two states.
@@ -83,8 +104,6 @@ Formally, a CRDT is defined as follows.
 % %
 % It is required that $(S,\Merge)$ forms a join-semilattice, to ensure convergence.
 % Moreover, the state ordering induced by $\Merge$ is compatible with the transition function, i.e., $x \leq y$ whenever $x \Merge y = y$ and $x \leq \tau(x,o)$, for any update $o$.
-
-
 
 \begin{example}[Counter CRDTs] \label{ex:counterCRDT}
   A basic CRDT example is a grow-only counter.

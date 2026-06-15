@@ -1,3 +1,9 @@
+\newcommand*{\newmathit}[1]{%
+  \expandafter \@ifdefinable \csname #1\endcsname {%
+    \global \@namedef{#1}{\ensuremath{\mathit{#1}}}%
+  }%
+}
+
 \newcommand{\replicated}{\ensuremath{{}^{\blacktriangle}{}}}
 \newcommand{\R}{\replicated}
 \newcommand{\tombstone}{\ensuremath{^\dagger{}}}
@@ -90,3 +96,8 @@
 \newcommand{\NA}{\ensuremath{\text{{\color{Black} --\xspace}}}}
 
 \newcommand{\fmke}{\ensuremath{\text{FMKe}}}
+
+\newcommand{\hb}{\ensuremath{\prec}}
+\newcommand{\vis}{\ensuremath{\stackrel{\mathit{vis}}{\rightarrow}}}
+\newcommand{\ar}{\ensuremath{\stackrel{\mathit{ar}}{\rightarrow}}}
+\newmathit{resp}
