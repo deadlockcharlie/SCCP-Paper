@@ -65,6 +65,7 @@ A grow only counter is a lifting from a sequential counter without a decrement o
 
 
 \begin{theorem}[Liftability Characterization]
+  \labtheo{lift}
   A sequential type $T$, with a set of states $S$ and its binary operator $\oplus$ is liftable via  $\R$ iff $(\oplus,S)$ is a commutative monoid and $\oplus$ is intention-preserving.
 %   \ps{Well, this is not really $T$ but instead $(\oplus,S)$.}
 \end{theorem}
@@ -245,100 +246,23 @@ This completes the construction and verification. Hence $(T, \oplus, e)$ admits 
 $(T, \oplus, e)$ admits a $\R$-lifting if and only if $(T, \oplus, e)$ is a commutative monoid.
 \hfill$\blacksquare$
 
-\ap{present some existing CRDTs and show how this theorem applies to sequential types to get a CRDT.}
-
-
-
-\ap{Further extends to the fact that the product of two comm monoids is a monoid. }
+%% \ap{present some existing CRDTs and show how this theorem applies to sequential types to get a CRDT.}
+%% \ap{Further extends to the fact that the product of two comm monoids is a monoid. }
 
 % \begin{corollary}[Non-liftability of string concatenation]
 % The type $(\Sigma^*, \cdot, \varepsilon)$ admits no $\R$-lifting, since string concatenation is not commutative: $\text{``AB''} \cdot \text{``CD''} = \text{``ABCD''} \neq \text{``CDAB''} = \text{``CD''} \cdot \text{``AB''}$. By the necessity direction of the theorem, no valid $\get$ can exist. \qed
 % \end{corollary}
 
+The result above provides some interesting observations about CRDTs.
+%
+First, the fact that $(\mathbb{N},\mathit{max})$ is a commutative monoid implies the existence of a grow-only CRDT counter (see~\refsec{background}).
+%
+A second observation is that the Cartesian product of commutative monoids is also a commutative monoid.
+Thus, for any object $T$ with state $S$ and mutators $\Delta_m$ if $(S,\Delta_m)$ can be split into a set $(S,\Delta_1), \ldots, (S,\Delta_m)$ such that each $(S,\Delta_i)$ is liftable in the sense of \reftheo{lift}, then $T$ admits a CRDT implemenation.
+%
+This happens with PN-counter (\refsec{background});
+in this case $m=2$, $\Delta_1$ encodes increments, and $\Delta_2$ encodes decrements.
+%
 
 
-
-\section{Extended Classification of Unliftable Types}
-
-\subsection{Types with No Binary Operation At All}
-
-\ps{See my point above about inducing it from the transition function.}
-
-Consider a type $T$ that carries no natural merge structure whatsoever. The canonical example is:
-\[
-T = \{0, 1\}^* / \sim
-\]
-the set of bitstrings modulo some equivalence that is not a congruence with respect to any commutative operation. More concretely:
-
-\begin{corollary}[Last-Write-Wins Register]
-Let $T$ be any set, with the intended sequential semantics being that the most recent write wins. The ``operation'' is:
-\[
-a \oplus b = b \quad \text{(take the rightmost value)}
-\]
-This is not commutative since $a \oplus b = b \neq a = b \oplus a$ in general. Therefore no $\R$-lifting exists.
-\end{corollary}
-
-However, this is not because the type is unliftable in principle. It is because the sequential specification itself is inherently order-dependent, and no CRDT can implement it without additional metadata. The standard resolution is to enrich $T$ with timestamps, yielding a different sequential type $(T \times \text{Timestamp}, \oplus_{\text{LWW}}, \bot)$ that is liftable. The original $T$ is unliftable but only because it is under-specified. \qed
-
-
-\subsection{Irreparably Unliftable Types}
-
-The deepest obstruction arises from types whose semantics are inherently non-monotone. A function $f : T \to T$ is monotone with respect to a partial order if:
-\[
-a \leq b \implies f(a) \leq f(b)
-\]
-CRDTs are monotone by construction --- state only moves upward in the semilattice order. Therefore:
-
-\begin{theorem}[Monotonicity Obstruction]
-If the sequential specification of $(T, \oplus, e)$ requires any operation that is non-monotone with respect to every partial order on $T$, then $T$ admits no $\R$-lifting.
-\end{theorem}
-
-The canonical example is:
-\[
-T = (\mathbb{Z}, \min, +\infty)
-\]
-considered not as an output type but as a type supporting decrement without bound. A counter that can decrease arbitrarily has no monotone CRDT representation, because any decrease would require moving downward in the lattice order, contradicting the SEC requirement that state transitions are monotone.
-
-More precisely:
-
-\begin{theorem}[Non-liftability of unbounded decrement]
-Let $T = (\mathbb{Z}, +, 0)$ with the operation set including both increment and decrement as primitive sequential operations rather than as derived from a PN-Counter lifting. Then $T$ admits no $\R$-lifting that is monotone and satisfies SEC.
-\end{theorem}
-
-\begin{proof}
-Suppose $T\R$ exists. Since SEC requires that the state lattice is a join-semilattice, the state space must have a partial order $\leq$ such that every update is monotone increasing. But the decrement operation $d : T\R \to T\R$ must satisfy:
-\[
-\get(d(a)) = \get(a) - 1 < \get(a)
-\]
-
-So $d$ strictly decreases the observable value. For $d$ to be monotone, we need $d(a) \geq a$ in the lattice order, yet $\get$ must be order-preserving, so $\get(d(a)) \geq \get(a)$, contradicting $\get(d(a)) = \get(a) - 1$. Therefore no such lifting exists. \qed
-\end{proof}
-
-\medskip
-\noindent\textbf{Remark.} The PN-Counter resolves this not by lifting $(\mathbb{Z}, +, 0)$ directly, but by changing the type to a pair of monotone counters $(\mathbb{N} \times \mathbb{N}, \oplus_{\text{PN}}, (0,0))$ whose $\get$ computes the difference. The integer type itself remains unliftable.
-
-\begin{table*}[h]
-    \centering
-         \begin{tabular}{|l|c|l|}
-\hline
-\textbf{Type class} & \textbf{Liftable?} & \textbf{Reason} \\
-\hline
-Commutative monoids & \checkmark Yes & Constructive lifting exists \\
-$(\mathbb{N}, +, 0)$, $(\mathbb{B}, \lor, \bot)$ & & (Theorem~1) \\
-\hline
-Non-commutative monoids & $\times$ No & Commutativity of $\sqcup$ forces \\
-$(\Sigma^*, \cdot, \varepsilon)$ & & commutativity of $\oplus$ \\
-\hline
-Non-associative types & $\times$ No & Associativity of $\sqcup$ forces \\
-$(\mathbb{Z}, -, 0)$ & & associativity of $\oplus$ \\
-\hline
-Non-monotone types & $\times$ No & SEC monotonicity is violated \\
-$(\mathbb{Z}, +, 0)$ with decrement & & \\
-\hline
-Under-specified types & $\times$ No directly & Liftable only after adding \\
-(LWW register) & \checkmark with enrichment & metadata to the type \\
-\hline
-    \end{tabular}
-    \caption{classification of types with respect to liftability}
-    \label{tab:liftabletypeclassification}
-\end{table*}
+\WIP
