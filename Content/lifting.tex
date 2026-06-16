@@ -266,6 +266,6 @@ Thus, for any object $T$ with state $S$ and mutators $\Delta_m$ if $(S,\Delta_m)
 This happens with PN-counter (\refsec{background});
 in this case $m=2$, $\Delta_1$ encodes increments, and $\Delta_2$ encodes decrements.
 %
-Going back to the CRDT sequence, removal is implemented by taking the Cartesian product of $(\mathcal{P}, \cup)$ together with a commutative monoid $(\mathcal{M}, \land)$ where any $m \in \mathcal{M}$ is a map from the sequence domain to $\{0,1\}$ and $(m \land m')[x]$ equals $0$ if either $m[x]=0$ or $m'[x]=0$ and $1$ otherwise.
+Going back to the CRDT sequence, removal is implemented by taking the Cartesian product of $(\mathcal{P}, \cup)$ together with a commutative monoid $(\mathcal{M}, \land)$ where any $m \in \mathcal{M}$ is a map from the sequence domain to $\{0,1\}$ and $(m \land m')[x]$ equals $0$ if either $m[x]=0$ or $m'[x]=0$, and $1$ otherwise.
 
 \WIP
