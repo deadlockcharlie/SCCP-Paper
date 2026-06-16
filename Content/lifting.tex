@@ -254,15 +254,17 @@ $(T, \oplus, e)$ admits a $\R$-lifting if and only if $(T, \oplus, e)$ is a comm
 % \end{corollary}
 
 The result above provides some interesting observations about CRDTs.
-%
+
 First, the fact that $(\mathbb{N},\mathit{max})$ is a commutative monoid implies the existence of a grow-only CRDT counter (see~\refsec{background}).
-%
+For a CRDT sequence, its states are all the partial orders $\mathcal{P}$ such that for any two partial orders $P_1=(V_0, \le_0)$ and $P_2=(V_1, \le_1)$, if (i) if $y \le_0 x$ and $x \in V_1$, then $y \le_1 x$, and (ii) the converse holds for $P_2$ wrt. $P_1$.
+In that case, $(\mathcal{P}, \cup)$ where $\cup$ is the standard union operator forms a commutative monoid.
+
 A second observation is that the Cartesian product of commutative monoids is also a commutative monoid.
 Thus, for any object $T$ with state $S$ and mutators $\Delta_m$ if $(S,\Delta_m)$ can be split into a set $(S,\Delta_1), \ldots, (S,\Delta_m)$ such that each $(S,\Delta_i)$ is liftable in the sense of \reftheo{lift}, then $T$ admits a CRDT implemenation.
 %
 This happens with PN-counter (\refsec{background});
 in this case $m=2$, $\Delta_1$ encodes increments, and $\Delta_2$ encodes decrements.
 %
-
+Going back to the CRDT sequence, removal is implemented by taking the Cartesian product of $(\mathcal{P}, \cup)$ together a commutative monoid $(D, \land)$ where $D$ is a map from the sequence domain to $\{0,1\}$ and $(D \land D')[x]$ equals $0$ if either $D[x]=0$ or $D'[x]=0$ and $1$ otherwise.
 
 \WIP
