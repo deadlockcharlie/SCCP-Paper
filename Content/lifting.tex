@@ -271,11 +271,12 @@ in this case $m=2$, $\Delta_1$ encodes increments, and $\Delta_2$ encodes decrem
 Going back to the CRDT sequence, removal is implemented by taking the Cartesian product of $(\mathcal{P}, \cup)$ together with a commutative monoid $(\mathcal{M}, \land)$ where every $m \in \mathcal{M}$ is a map from the sequence domain to $\{0,1\}$ such that $(m \land m')[x]$ equals $0$ if either $m[x]=0$ or $m'[x]=0$, and $1$ otherwise.
 This decomposition correspond to the notion of tombstone, as found e.g., in WOOT~\cite{woot}.
 
-A third observation is that there exists a universal approach to lift sequential objects:
-Let $M \subseteq O$ be the mutators defined by the data type and $<$ be the common partial order over sequences in the free monoid $M^*$.
-Suppose some linearization $\ll$ of $<$.
-%
-Then, denoting $\sqcup_{\ll}$ the lower upper bound operator induced by $\ll$, $(M^*,\sqcup_{\ll})$ is a commutative monoid.
+% This is not intention preserving!
+%% A third observation is that there exists a universal approach to lift sequential objects in certain cases.
+%% Let $M \subseteq O$ be the mutators defined by the data type and $<$ be the common partial order over sequences in the free monoid $M^*$.
+%% Suppose some linearization $\ll$ of $<$.
+%% Then, denoting $\sqcup_{\ll}$ the lower upper bound operator induced by $\ll$, $(M^*,\sqcup_{\ll})$ is a commutative monoid.
 
-Interestingly, this constructs differs from the standard last-write-wins (LWW) approach.
-The next section proves that in fact LWW and other timestamps based approach to arbitration are not lifting a sequential data type.
+\ps{It seems that there is no universal lifting, but how to prove this?}
+
+\ps{We can establish that LWW register is not a lifting of a register.}
