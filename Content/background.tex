@@ -83,10 +83,10 @@ Convergence is guaranteed by requiring the merge operation to be associative, co
 Formally, a CRDT is defined as follows.
 
 \begin{definition}[CRDT]
-    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \bot, u, \sqcup)$, is a tuple consisting of a set of states $\mathbb{S}$, containing an initial state $\bot \in \mathbb{S}$. 
+    A conflict-free replicated datatype, denoted $\mathbb{T} \coloneq (\mathbb{S}, \bot, U)$, is a tuple consisting of a set of states $\mathbb{S}$, containing an initial state $\bot \in \mathbb{S}$. 
     Other states are derived from this initial state via a set of update operations $u$. 
     CRDT state is monotonically non-decreasing across updates i.e. $u(s)=s' \Rightarrow s \le s'$.     
-    A binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ computes the lowest upper bound of two states in $\mathbb{S}$. 
+    A CRDT is equipped with binary merge operator $\sqcup : \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{S}$ which computes the lowest upper bound of two states in $\mathbb{S}$. 
     Merge induces a partial ordering over the states where $s_1 \sqcup s_2 = s_3 \Rightarrow s_1 \le s_3$ and $s_2 \le s_3$
 
     % \ps{In this definition $\leq$ is the ordering implied by $\sqcup$ (see PG-CRDT paper). Thus $\leq$ can be omitted.}
@@ -124,6 +124,29 @@ Formally, a CRDT is defined as follows.
   Concurrently, $r'$ calls $decr()$ twice, reaching $(P: \{r: 0, r': 0\}, N:\{r: 0, r': 2\})$.
   Merging the two states yields $(P:\{r: 5, r': 0\}, N:\{r: 1, r': 2\})$, which represents the value $2$.
 \end{example}
+
+\subsection{Rollback-freedom}
+\begin{definition}[Rollback Freedom]
+Let $\mathcal{E} = (O, vis, ar)$ be an abstract execution where $O$ is a set of operations, $vis$ is the visibility relation, and $ar$ is the arbitration relation. 
+
+For each replica $r$, let $\sigma_r: \mathbb{N} \to 2^O$ denote a sequence of visible operation sets at replica $r$ over time, where $\sigma_r(t) = \{o \in O \mid o \text{ is visible at replica } r \text{ at time } t\}$.
+
+An execution $\mathcal{E}$ is \emph{rollback-free} if for all replicas $r$ and all times $t_1 < t_2$:
+\begin{equation}
+\sigma_r(t_1) \subseteq \sigma_r(t_2)
+\end{equation}
+
+That is, the set of visible operations at each replica grows monotonically: once an operation becomes visible at a replica, it remains visible forever.
+\end{definition}
+
+Rollback freedom ensures that replica states evolve forward-only. If an execution is rollback-free, then for any replica $r$ with state evolution $s_r(t)$ derived from applying operations in $\sigma_r(t)$, the state at time $t_2$ can be computed from the state at time $t_1 < t_2$ by applying only the new operations in $\sigma_r(t_2) \setminus \sigma_r(t_1)$, without undoing or recomputing previously applied operations.
+
+% \begin{proposition}
+% If a data type admits an $\mathcal{R}$-lifting to a CRDT, then all executions under the CRDT semantics are rollback-free.
+% \end{proposition}
+% \begin{proof}
+% In a CRDT, replica states form a join-semilattice under the merge operator $\sqcup$ (by L4). When a replica receives new operations via synchronization, it merges its current state with the received state using $\sqcup$. Since merge is idempotent and monotonic with respect to the partial order induced by the semilattice, the visibility set can only grow, and no operations need to be undone.
+% \end{proof}
 
 
 \subsection{Correctness of CRDTs}

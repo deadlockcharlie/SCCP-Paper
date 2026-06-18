@@ -35,24 +35,27 @@
 
 
 % \end{definition}
- \begin{definition}[Liftablity]
-A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (\mathbb{S}, \bot,u, \sqcup)$ with an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
+ \begin{definition}[Liftablity] \label{def:liftability}
+A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (\mathbb{S}, \bot,U)$ with a binary merge operator $\sqcup$ and an observation function $\get: \mathbb{S} \to S$ that materializes the value  of a CRDT and satisfies the following:
 
 % and initial element $\bot$, and an observation function $\get : T\R \to T$, satisfying:
 
-\ps{Recall that this is the definition of a state-based CRDT (i.e., a merge semi-lattice.)}
+% \ps{Recall that this is the definition of a state-based CRDT (i.e., a merge semi-lattice.)}
 
 % \ap{need more explanation for L2. saying that merging the states does not loose any operations when using $\oplus$.}
-\begin{itemize}
-\item[(L1)] $\get(\bot) = s_0$
-\item[(L2)] For any $s_1, s_2 \in \mathbb{S}, \get(s_1 \sqcup s_2) = \get(s_1) \oplus \get(s_2)$
+\begin{enumerate}[label={L\arabic*}]
+\item \label{cond:lifting1} $\get(\bot) = s_0$
+\item \label{cond:lifting2} For any $s_1, s_2 \in \mathbb{S}, \get(s_1 \sqcup s_2) = \get(s_1) \oplus \get(s_2)$
 
 % with $b$ fresh \ps{definition? One idea is that neither $a \leq b$, nor the other way around, but I see that you consider something different below.} with respect to $a$:
 
 
-\item[(L3)] $\get$ is surjective: for every $s \in S$ there exists some $s' \in \mathbb{S}$ with $\get(s') = s$.
-\item[(L4)] $\sqcup$ is commutative, associative, and idempotent.
-\end{itemize}
+\item \label{cond:lifting3} $\get$ is surjective: for every $s \in S$ there exists some $s' \in \mathbb{S}$ with $\get(s') = s$.
+\item \label{cond:lifting4} $\sqcup$ is commutative, associative, and idempotent.
+\end{enumerate}
+
+
+
  \end{definition}
 
 
@@ -62,11 +65,10 @@ A sequential type $T$ admits a $\R$-lifting if there exists a CRDT type $T\R = (
 Consider the example of a CRDT presented in Example \ref{ex:counterCRDT}. 
 A grow only counter is a lifting from a sequential counter without a decrement operation. 
 
-
+% \ap{A theorem later posits that a liftable sequential type is roll-back free if the operations in $\Delta$ follow left and right moverness?}
 
 \begin{theorem}[Liftability Characterization]
-  \labtheo{lift}
-  A sequential type $T$, with a set of states $S$ and its binary operator $\oplus$ is liftable via  $\R$ iff $(\oplus,S)$ is a commutative monoid and $\oplus$ is intention-preserving.
+  A sequential type $T$, with a set of states $S$ and its binary operator $\oplus$ is liftable via  $\R$ iff $(S, \oplus)$ is a commutative monoid and $\oplus$ is intention-preserving.
 %   \ps{Well, this is not really $T$ but instead $(\oplus,S)$.}
 \end{theorem}
 This proof proceeds as follows: 
@@ -138,7 +140,7 @@ So, by (L2): $\get(a \sqcup \bot) = \get(a) \oplus \get(\bot) = t \oplus s_0$
 Since $\bot$ is the identity of $\sqcup$ by the CRDT definition, so $a \sqcup \bot = a$. Thus, $\get(a \sqcup \bot) = \get(a) = t$. 
 % Therefore $t \oplus s_0 = t$. 
 Since $\oplus$ must be intention preserving, $s_0$ must not contain any updates so that $t \oplus s_0 = t$. 
-Which makes $s_0 \in S$ the identity element for the commutative monoid $(\oplus, S)$. 
+Which makes $s_0 \in S$ the identity element for the commutative monoid $(S, \oplus)$. 
 
 By commutativity of $\oplus$, $s_0$ is a two-sided identity for $\oplus$.
 % \ps{OK}
@@ -147,100 +149,101 @@ This completes the proof of necessity.
 \end{proof}
 
 \begin{proof}[Proof (Sufficiency): Commutative monoid implies liftability]$ $\newline
-  
  Assume that for a type $T$, its set of states $S$ and binary operator $\oplus$ form a commutative monoid. We construct a valid $T\R$-lifting explicitly.
 
-\noindent\emph{Construction:} We define $T\R  = (\mathbb{S}, \bot, \Delta)$ as follows:
-% \ps{I do not understand, $T\R$ should be a CRDT. So why using $\Delta'$ here?}
+\noindent\emph{Construction:} We define a CRDT $T\R  = (\mathbb{S}, \bot, \Delta)$ with a binary merge operator $\sqcup$. 
+A state in $\mathbb{S}$ is a mapping from a replica identifier to sequential type. 
+A lifted CRDT has the same legal set of operations ($\Delta$) as its sequential counterpart.
+Let $R$ be a set of replica identifiers, $\mathbb{S} :R \to S$ is a CRDT with an observation function $get(): \mathbb{S} \rightarrow S$ and the following properties:  
 
 \begin{itemize}
-\item \textbf{Initial element:} $\bot := s_0$, the constant function returning $s_0$.
-
-\item \textbf{Merge operator:} $(f \sqcup g)(r) := f(r) \oplus g(r)$, applied pointwise.
-
-\item \textbf{Observation function:} $\get(f) := \bigoplus_{r \in R} f(r)$, the fold of $\oplus$ over all replica values.
+\item \textbf{Initial element:} $get(\bot) := s_0$.
+\item \textbf{Observation function:} $\get(s) := \bigoplus_{r \in R} s_r$, the fold of $\oplus$ over all replica states.
+\item \textbf{Merge operator:} For states $s, s' \in \mathbb{S}, s \sqcup s' = get(s) \oplus get(s')$.
 \end{itemize}
 
-\ps{In what precedes, there is no definition of $\mathbb{S}$. From the definition of $\bot$ it should be a set of functions??}
+While replicas store a shared state, a replica $r$ updates its own coordinate $s_r$ in its local state. For an operation $op \in \Delta$, a state update at replica $r$ is evaluated as follows: 
+% Each replica $r$ maintains only its own coordinate, so replica $r$'s update  $t$ on a state $s$ is:
 
+\[s' = s[r \mapsto \Delta(s_r, op)]\]
+% \[
+% s' := \forall r' \in R, \begin{cases}
+% \Delta(s_{r'}, op) &\text{if } r' = r \\
+%  s_r & \text{otherwise}
+% \end{cases}
+% \]
 
+% \ps{OK.}
 
-
-\noindent\emph{Construction.} Let $R$ be a finite set of replica identifiers
-
-\ps{One interesting (but not directly related) question is how necesary this assumption is. For instance, what happens is the systme is anonymous. This can be useful to bound metadata usage}. \ap{The replica identifiers here, simplify the get function w.r.t freshness constraints. I will try to find a way to eliminate this.}
-
-
-Define:
-\[
-T\R := (R \to T)
-\]
-that is, the type of functions assigning a value in $T$ to each replica, which we think of as a state vector. Define:
-
-\begin{itemize}
-\item \textbf{Initial element:} $\bot := \lambda r.\, e$, the constant function returning $e$.
-
-\item \textbf{Merge operator:} $(f \sqcup g)(r) := f(r) \oplus g(r)$, applied pointwise.
-
-\item \textbf{Observation function:} $\get(f) := \bigoplus_{r \in R} f(r)$, the fold of $\oplus$ over all replica values.
-\end{itemize}
-
-Each replica $r$ maintains only its own coordinate, so replica $r$'s update is:
-\[
-\delta_r(f, t)(r') := \begin{cases} 
-f(r') \oplus t & \text{if } r' = r \\
-f(r') & \text{otherwise}
-\end{cases}
-\]
-
-\ps{OK.}
+With such a lifting, we prove conditions \ref{cond:lifting1}, \ref{cond:lifting2}, \ref{cond:lifting3} and \ref{cond:lifting4}.  
 
 \medskip
-\noindent\emph{Verification of CRDT axioms.}
+\noindent\emph{\textbf{Condition \ref{cond:lifting1}}.} holds by the definition of our CRDT construction. Since, $\get(\bot) = s_0$. 
 
-\noindent\textit{Commutativity of $\sqcup$:} For any $f, g$ and any $r$:
-\[
-(f \sqcup g)(r) = f(r) \oplus g(r) = g(r) \oplus f(r) = (g \sqcup f)(r)
-\]
-using commutativity of $\oplus$. Hence $f \sqcup g = g \sqcup f$.
-
-\ps{We might need also that $e$ is neutral; no? This is easy: $r$, $(f \sqcup \bot)(r) = f(r) \oplus \bot(r) = f(r) \oplus e = f(r)$} \ap{The proof of e (now called $s_0$) being neutral comes from the other direction where we define the CRDT type and prove that it produces a commutative monoid.}
-
-\noindent\textit{Associativity of $\sqcup$:} Follows immediately from associativity of $\oplus$ applied pointwise.
-
-\noindent\textit{Idempotency of $\sqcup$:} This follows from the disjoint union in the definition of $\oplus$. Since merge is performed pointwise, every operation is only counted once in the binary operator. Thus, remaining idempotent.  
-
-
-% This requires an additional condition. Since $\oplus$ need not be idempotent in general, we enforce idempotency structurally by the freshness discipline. Each replica update $\text{inc}_r$ is applied at most once per value, so the case $f \sqcup f$ never arises in practice. Alternatively, one can replace $T$ with the lifted multiset construction $T\R := (R \to \mathbb{N}) \otimes T$ and recover idempotency formally, at the cost of a more complex $\get$. \ps{Not sure to follow this last part.}
 
 \medskip
-\noindent\emph{Verification of the homomorphism condition (L2).}
-Let $f, g \in T\R$ be fresh with respect to one another, meaning their nonzero coordinates are disjoint: for each $r$, at most one of $f(r)$, $g(r)$ is non-initial \ps{I see.}. Then:
+\noindent\emph{\textbf{Condition \ref{cond:lifting2}.}}
+Let $f, g \in T\R$ be two states of a lifted CRDT. A merge $f \sqcup g$ is defined as a fold over all replica states. 
 \[
-\get(f \sqcup g) = \bigoplus_{r \in R} (f \sqcup g)(r) = \bigoplus_{r \in R} (f(r) \oplus g(r))
+\get(f \sqcup g) = \bigoplus_{r \in R} (f_r \sqcup g_r)
 \]
 
-Since $\oplus$ is commutative and associative, and the supports of $f$ and $g$ are disjoint:
-\[
-= \left(\bigoplus_{r \in R} f(r)\right) \oplus \left(\bigoplus_{r \in R} g(r)\right) = \get(f) \oplus \get(g)
-\]
+This pointwise fold can be expanded over all replica states as follows:
+
+\begin{align*}
+\bigoplus_{r \in R} (f_r \sqcup g_r) &= (f_1 \sqcup g_1) \oplus \dots \oplus (f_r \sqcup g_r) \\
+&=   (get(f_1) \oplus get(g_1)) \oplus \dots \oplus (get(f_r) \oplus get(g_r))
+\end{align*}
+
+Individual replica contributions $f_1 \dots f_r \text{ and } g_1 \dots g_r$ are disjoint and $\oplus$ is associative, commutative and intention-preserving. So, a fold can be rewritten.
+\begin{align*}
+   & (get(f_1) \oplus get(g_1)) \oplus \dots \oplus (get(f_r) \oplus get(g_r)) \\
+     &=   (\get(f_1) \oplus \dots \oplus get(f_r)) \oplus (\get(g_1) \oplus \dots \oplus get(g_r)) \\
+    &= (\bigoplus_{r \in R} \get(f_r)) \oplus (\bigoplus_{r \in R} \get(g_r)) \\
+    &= \get(f) \oplus \get(g)
+\end{align*}
+
+Thus, $\get(f \sqcup g) = get(f) \oplus \get(g)$
+
+
+
+
+
+% fresh with respect to one another, meaning their nonzero coordinates are disjoint: for each $r$, at most one of $f(r)$, $g(r)$ is non-initial \ps{I see.}. Then:
+% \[
+% \get(f \sqcup g) = \bigoplus_{r \in R} (f \sqcup g)(r) = \bigoplus_{r \in R} (f(r) \oplus g(r))
+% \]
+
+% Since $\oplus$ is commutative and associative, and the supports of $f$ and $g$ are disjoint:
+% \[
+% = \left(\bigoplus_{r \in R} f(r)\right) \oplus \left(\bigoplus_{r \in R} g(r)\right) = \get(f) \oplus \get(g)
+% \]
+
+
+% \medskip
+% \noindent\emph{\textbf{Condition \ref{cond:lifting3}.}}
+% For any $s \in S$, fix a replica $r_0 \in R$ and define a function $f := \lambda r.\, \text{if } r = r_0 \text{ then } s \text{ else } $. Then $\get(f) = t \oplus e \oplus \cdots \oplus e = t$. So $\get$ is surjective. \ps{OK}
+
 
 \medskip
-\noindent\emph{Verification of (L1).}
-\[
-\get(\bot) = \bigoplus_{r \in R} e = e
-\]
-using the identity law of $\oplus$ iterated over $R$.
+\noindent\emph{\textbf{Condition \ref{cond:lifting4}}: Verification of CRDT axioms.}
 
-\medskip
-\noindent\emph{Verification of (L3).}
-For any $t \in T$, fix any replica $r_0 \in R$ and define $f := \lambda r.\, \text{if } r = r_0 \text{ then } t \text{ else } e$. Then $\get(f) = t \oplus e \oplus \cdots \oplus e = t$. So $\get$ is surjective. \ps{OK}
+\noindent\textit{Associativity of $\sqcup$} follows from associativity of $\oplus$ applied pointwise.
 
-\medskip
+\noindent\textit{Commutativity of $\sqcup$} follows from the commutativity of $\oplus$.
+
+% \ps{We might need also that $e$ is neutral; no? This is easy: $r$, $(f \sqcup \bot)(r) = f(r) \oplus \bot(r) = f(r) \oplus e = f(r)$} \ap{The proof of e (now called $s_0$) being neutral comes from the other direction where we define the CRDT type and prove that it produces a commutative monoid.}
+
+
+\noindent\textit{Idempotence of $\sqcup$:} A merge via $\sqcup$ is evaluated pointwise over all replica contributions in a state. Assume states, $s, s', s'' \in \mathbb{S}\text{ such that } s\sqcup s' = s''$. 
+
+By definition of a lifted CRDT, $s'' = get(s) \oplus get (s')$. 
+When $\oplus$ is intention-preserving and $\Delta(s_0,\sigma)=s$ and $\Delta(s_0,\sigma')=s'$, $s''$ is achieved by a sequence of operations $\lambda$ such that $\Delta(s_0,\lambda)=s \oplus s'$ and $ops(\lambda)=ops(\sigma) \cup ops(\sigma')$. 
+The idempotence of this sequence of operations follows from the idempotence of set union. 
+
 This completes the construction and verification. Hence $(T, \oplus, e)$ admits a $\R$-lifting.
 \end{proof}
 
-\medskip
 \noindent\textbf{Conclusion}
 
 $(T, \oplus, e)$ admits a $\R$-lifting if and only if $(T, \oplus, e)$ is a commutative monoid.
